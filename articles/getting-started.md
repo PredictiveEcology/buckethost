@@ -1,0 +1,133 @@
+# Getting started with buckethost
+
+`buckethost` turns any S3-compatible bucket into a browsable, remotely
+readable data repository. This vignette covers day-to-day use; for the
+full “how do I get data into a bucket in the first place” recipe see
+[`vignette("migration-workflow")`](https://predictiveecology.github.io/buckethost/articles/migration-workflow.md).
+
+## Configure once
+
+Functions resolve connection details from options (or `BUCKETHOST_*`
+environment variables). Set them once — ideally in your `.Rprofile`:
+
+``` r
+library(buckethost)
+
+options(
+  buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
+  buckethost.container = "predictiveecology",
+  buckethost.remote    = "arbutus"   # name of the rclone remote
+)
+```
+
+Three identifiers, easily confused:
+
+- **endpoint** — the storage host, no bucket name.
+- **container** — the bucket name.
+- **remote** — the *local* name of your `rclone` remote (from
+  `rclone config`). Only the mutating functions
+  ([`bucket_upload()`](https://predictiveecology.github.io/buckethost/reference/bucket_upload.md),
+  [`bucket_delete()`](https://predictiveecology.github.io/buckethost/reference/bucket_delete.md),
+  [`bucket_verify()`](https://predictiveecology.github.io/buckethost/reference/bucket_verify.md),
+  and uploading indexes) use it.
+
+[`bucket_base_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)
+and
+[`bucket_rclone_remote()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)
+show how these combine:
+
+``` r
+bucket_base_url()        #> "https://object-arbutus.cloud.computecanada.ca/predictiveecology"
+bucket_rclone_remote()   #> "arbutus:predictiveecology"
+```
+
+## Discover what’s there
+
+[`bucket_ls()`](https://predictiveecology.github.io/buckethost/reference/bucket_ls.md)
+reads the bucket’s public listing API (no credentials needed for a
+public-read bucket) and returns one row per object:
+
+``` r
+objs <- bucket_ls(prefix = "SCANFI_v2/1985")
+head(objs)
+#>                                          key      size                  modified
+#> 1 SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif 154238911 2026-01-19T...
+```
+
+Build URLs from keys:
+
+``` r
+bucket_url("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+#> "https://object-arbutus.cloud.computecanada.ca/predictiveecology/SCANFI_v2/1985/..."
+```
+
+## Read rasters remotely
+
+[`bucket_raster()`](https://predictiveecology.github.io/buckethost/reference/bucket_raster.md)
+wraps `terra::rast("/vsicurl/<url>")`. For a Cloud-Optimized GeoTIFF,
+GDAL fetches only the byte ranges it needs:
+
+``` r
+r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+r                       # metadata only; nothing downloaded yet
+
+aoi <- terra::vect(my_study_area)
+sub <- terra::crop(r, terra::project(aoi, terra::crs(r)))   # a few hundred KB
+terra::plot(sub)
+```
+
+## Mutate the bucket
+
+Uploads and deletes wrap `rclone` and fail loudly with rclone’s own
+error text. rclone only transfers changes, so re-running is cheap.
+
+``` r
+bucket_upload("~/local/SCANFI/1985", "SCANFI_v2/1985",
+              filter_file = "~/scanfi.filter",
+              extra = c("--retries", "10", "--stats", "60s"))
+
+res <- bucket_verify("~/local/SCANFI/1985", "SCANFI_v2/1985",
+                     filter_file = "~/scanfi.filter")
+res$ok
+
+bucket_delete("SCANFI_v2/1985/obsolete.tif")          # prompts to confirm
+bucket_delete("SCANFI_v2/old", recursive = TRUE,
+              confirm = FALSE)                         # whole prefix, no prompt
+```
+
+## Generate the browsable catalogue
+
+[`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md)
+writes one `index.html` per folder level (sortable columns, breadcrumbs,
+a per-page disclaimer block) and uploads them:
+
+``` r
+generate_indexes(
+  heading = "PredictiveEcology Temporary Data Repository",
+  disclaimer_html = paste0(
+    "<div class='hero'><p><strong>These data are not produced by the ",
+    "PredictiveEcology group</strong> and are only hosted here to ease ",
+    "open data access.</p></div>"
+  ),
+  host_note = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
+)
+```
+
+Browse the result at `<endpoint>/<container>/index.html`. Inspect the
+pages without uploading by passing `dry_run = TRUE`, which returns the
+HTML:
+
+``` r
+pages <- generate_indexes(dry_run = TRUE)
+cat(pages[[""]])        # the root index.html
+```
+
+To customise the look, copy the shipped template and edit it:
+
+``` r
+file.copy(
+  system.file("templates", "index.html", package = "buckethost"),
+  "my-template.html"
+)
+generate_indexes(template = "my-template.html")
+```
