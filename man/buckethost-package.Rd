@@ -43,6 +43,7 @@ The equivalent environment variables are \code{BUCKETHOST_ENDPOINT},
 Useful links:
 \itemize{
   \item \url{https://github.com/PredictiveEcology/buckethost}
+  \item \url{https://predictiveecology.github.io/buckethost/}
   \item Report bugs at \url{https://github.com/PredictiveEcology/buckethost/issues}
 }
 

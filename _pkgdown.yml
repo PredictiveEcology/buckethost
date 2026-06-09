@@ -23,6 +23,11 @@ reference:
   contents:
   - generate_indexes
   - bucket_verify
+- title: Mirror
+  desc: >
+    Map a bucket's contents (and optional Google Drive source) to a manifest.
+  contents:
+  - makeMirrorManifest
 - title: Configuration
   desc: >
     Resolve connection details from options / environment variables.
