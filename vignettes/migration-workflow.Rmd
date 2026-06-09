@@ -1,0 +1,243 @@
+---
+title: "Migrating data to an object store (the Arbutus recipe)"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Migrating data to an object store (the Arbutus recipe)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+This is the end-to-end recipe used to move large GeoTIFF datasets from Google
+Drive to the Digital Research Alliance of Canada's **Arbutus** object storage,
+expose them via `/vsicurl/` for remote-readable access in R (`terra`), and
+provide a browsable HTML catalogue with `buckethost`.
+
+It is deliberately specific — future-you debugging a six-month-later problem
+will want the exact flags and gotchas, not a sanitised summary. Most of it is
+dashboard / shell work done once; the R parts are at the end.
+
+## Why object storage over Google Drive?
+
+- Google Drive doesn't support HTTP range requests reliably, so partial reads
+  with `terra::rast("/vsicurl/...")` don't work — every read pulls the whole
+  file.
+- Arbutus is S3/Swift-compatible, Canadian-hosted, and free for academic PIs
+  (Rapid Access Service allocation).
+- Once files are Cloud-Optimized GeoTIFFs (COGs) on Arbutus,
+  `terra::rast()` + `crop()` transfers only the bytes needed for the area of
+  interest — typically a few hundred KB per query.
+
+## Why a fast transfer node, not your usual login host?
+
+A government-network host gave ~1 MB/s sustained during testing; a 321 GB
+migration would have taken days. The Alliance's **Fir** cluster is on the
+CANARIE research network with ~600+ MB/s to both Drive and Arbutus — the same
+321 GB completes in minutes. Run the transfer there.
+
+## Phase 0 — accounts and credentials (one-time, dashboard)
+
+**A. CCDB account active.** At <https://ccdb.alliancecan.ca>: confirm PI status
+and active allocations; under *My Account → Access Systems* enable the cluster
+you'll transfer from (e.g. Fir); under *Multifactor Authentication Management*
+enroll a Duo device and save 10 backup codes.
+
+**B. Arbutus cloud project + storage.** Request via the **RAS** (Rapid Access
+Service) form on CCDB. The form requires non-zero VM resources even for
+object-storage-only use, so choose the minimum (1 vCPU, 1 instance, 1 volume,
+1.5 GB RAM, 1 floating IP, 20 GB persistent). The number that matters is
+**Object Storage** — request what you need. Justify: hosting COG outputs for
+collaborator access via `/vsicurl/`; HPC clusters don't fit (they're for
+compute, not public HTTPS serving); include a maintenance plan. Turnaround is
+typically a week or two.
+
+**C. EC2 (S3-compatible) credentials.** The OpenStack *Application
+Credentials* in the dashboard are **not** what you want — those use
+Swift-native auth, not S3. The Horizon dashboard removed the direct "EC2
+Credentials" button, so use the CLI:
+
+```bash
+pipx install python-openstackclient        # or pip install --user on Windows
+source ~/Downloads/<project>-openrc.sh
+openstack ec2 credentials create
+```
+
+This needs port 5000 (Keystone), which is **blocked on many government
+networks**. Workaround: run it once from a home network or cellular hotspot.
+The resulting EC2 access key + secret are portable — once created they work
+from anywhere over port 443. Save them to a password manager.
+
+**D. Public container.** In the Arbutus dashboard: *Project → Object Store →
+Containers → Create container* named e.g. `predictiveecology`. Set its access
+to **Public** so `/vsicurl/` reads work without authentication.
+
+## Phase 1 — configure rclone on the transfer node
+
+Fir ships `rclone` (verify with `rclone version`). You need two remotes:
+`arbutus` (S3) and `gdrive` (Google Drive source).
+
+### 1a. The `arbutus` S3 remote
+
+`rclone config` → `n` (new) → name `arbutus` → storage `s3` → provider
+`Other` → `env_auth` false → paste your EC2 access key / secret → region blank
+→ endpoint `https://object-arbutus.cloud.computecanada.ca` →
+location_constraint blank → acl `private` → **Edit advanced config: yes**, and
+set the one critical option:
+
+```
+force_path_style = true
+```
+
+Arbutus's Swift S3 gateway doesn't support virtual-hosted-style URLs
+(`bucket.endpoint.com`). Without `force_path_style = true`, every request
+fails with signature or DNS errors. Accept defaults for everything else. The
+resulting `~/.config/rclone/rclone.conf` should contain:
+
+```ini
+[arbutus]
+type = s3
+provider = Other
+access_key_id = <key>
+secret_access_key = <secret>
+endpoint = https://object-arbutus.cloud.computecanada.ca
+acl = private
+force_path_style = true
+```
+
+Test: `rclone lsd arbutus:` should list your container(s) with no error.
+
+### 1b. The `gdrive` remote
+
+Google Drive OAuth needs a browser, but the node is headless. Bridge the
+callback with SSH port forwarding from your laptop:
+
+```bash
+ssh -L 53682:localhost:53682 <user>@fir.alliancecan.ca
+```
+
+In *that same session*: `rclone config` → `n` → name `gdrive` → storage
+`drive` → client_id/secret blank → scope `drive.readonly` (safer for a
+one-way migration) → service_account_file blank → advanced config `n` → "Use
+web browser to automatically authenticate?" `y`. rclone prints a
+`http://127.0.0.1:53682/auth?state=...` URL — paste it into your laptop
+browser; the SSH tunnel forwards it to rclone waiting on Fir. Authorize, then
+"Configure as Shared Drive?" `n` (unless it's a Team Drive) → confirm.
+
+Test: `rclone lsd gdrive:` lists your Drive folders. If your data is under
+"Shared with me", either add a My Drive shortcut to it, or add
+`--drive-shared-with-me` to commands targeting that path.
+
+## Phase 2 — migrate
+
+Work inside `tmux` so the transfer survives disconnects: `tmux new -s migrate`
+(detach with `Ctrl-b d`, reattach with `tmux attach -t migrate`).
+
+**2a. Filter file** (explicit top-to-bottom ordering, first match wins):
+
+```bash
+cat > ~/scanfi.filter << 'EOF'
+- *.tif.tiff
++ *.tif
++ *.tif.ovr
++ *.tif.aux.xml
+- *
+EOF
+```
+
+**2b. Run the copy**, looping over subfolders. Note the destination uses
+underscores (`SCANFI_v2`) instead of the source's space for cleaner URLs:
+
+```bash
+for year in 1985 1990 1995 2000 2005 2010 2015 2020 2025; do
+  echo "=== $(date) Starting $year ==="
+  rclone copy \
+    "gdrive:Shared/Hosted/SCANFI/SCANFI v2/$year" \
+    "arbutus:predictiveecology/SCANFI_v2/$year" \
+    --filter-from ~/scanfi.filter \
+    --transfers 16 --timeout 5m --contimeout 60s \
+    --retries 10 --low-level-retries 20 \
+    --stats 60s --log-file ~/rclone_scanfi_$year.log --log-level INFO
+  echo "=== $(date) Completed $year ==="
+done
+```
+
+**2c. Verify** counts/sizes, then a size-only check against the source:
+
+```bash
+for year in 1985 1990 1995 2000 2005 2010 2015 2020 2025; do
+  rclone size arbutus:predictiveecology/SCANFI_v2/$year
+done
+
+rclone check \
+  "gdrive:Shared/Hosted/SCANFI/SCANFI v2/1985" \
+  "arbutus:predictiveecology/SCANFI_v2/1985" \
+  --filter-from ~/scanfi.filter --size-only
+```
+
+The equivalent from R, once `buckethost` is configured:
+
+```{r}
+bucket_verify("gdrive-or-local/1985", "SCANFI_v2/1985",
+              filter_file = "~/scanfi.filter")$ok
+```
+
+## Phase 3 — generate the catalogue
+
+From any R session with the `arbutus` rclone remote configured:
+
+```{r}
+library(buckethost)
+options(
+  buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
+  buckethost.container = "predictiveecology",
+  buckethost.remote    = "arbutus"
+)
+
+generate_indexes(
+  heading = "PredictiveEcology Temporary Data Repository",
+  disclaimer_html = paste0(
+    "<div class='hero'>",
+    "<p><strong>These data are not produced by the PredictiveEcology group",
+    "</strong> and are only hosted here to ease open data access.</p>",
+    "<p>For SCANFI v2 data, see the authoritative source: ",
+    "<a href='https://open.canada.ca/data/en/dataset/",
+    "07653869-f303-46c2-a04e-9ab479b73cbf' target='_blank' rel='noopener'>",
+    "open.canada.ca</a></p></div>"
+  ),
+  host_note = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
+)
+```
+
+Browse it at
+`https://object-arbutus.cloud.computecanada.ca/predictiveecology/index.html`.
+Re-run `generate_indexes()` any time data is added or changed.
+
+## Phase 4 — the actual payoff: read it from anywhere
+
+```{r}
+library(terra)
+r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+r                                            # metadata only
+
+b   <- SpaDES.tools::randomStudyArea(size = 1e9, seed = 123)
+sub <- crop(r, project(vect(b), crs(r)))     # only the AOI's bytes transfer
+plot(sub)
+```
+
+## Troubleshooting FAQ
+
+- **Every S3 request fails with signature/DNS errors** → you forgot
+  `force_path_style = true` on the rclone S3 remote.
+- **`openstack ec2 credentials create` hangs/refuses** → port 5000 is blocked
+  on your network. Run it once from home or a hotspot; the credentials are
+  portable afterwards.
+- **OAuth callback never completes on a headless node** → the SSH
+  `-L 53682:localhost:53682` tunnel isn't up, or you ran `rclone config` in a
+  different session than the one with the tunnel.
+- **Application Credentials don't work with rclone** → those are Swift-native;
+  you need **EC2** credentials for the S3 protocol.
+- **Data is in "Shared with me" and rclone can't see it** → add a My Drive
+  shortcut, or use `--drive-shared-with-me`.

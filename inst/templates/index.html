@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'>
+<title>{{page_title}}</title>
+<style>
+body{font-family:system-ui,-apple-system,sans-serif;max-width:1000px;margin:2em auto;padding:0 1em;color:#222}
+h1{font-size:1.5em;margin-bottom:.4em}
+.hero{background:#fff8e1;border-left:4px solid #f4a72c;padding:.8em 1em;margin:1em 0;border-radius:0 4px 4px 0;font-size:.95em}
+.hero p{margin:.3em 0}
+.breadcrumb{color:#666;margin-bottom:1em;font-size:.9em}
+table{border-collapse:collapse;width:100%;margin-top:1em}
+th,td{padding:.4em .8em;text-align:left;border-bottom:1px solid #eee}
+th.sortable{background:#f7f7f7;font-weight:600;cursor:pointer;user-select:none}
+th.sortable:hover{background:#eee}
+th.sortable::after{content:' \2195';color:#bbb;font-size:.85em}
+th.sortable.asc::after{content:' \2191';color:#06c}
+th.sortable.desc::after{content:' \2193';color:#06c}
+tr:hover{background:#fafafa}
+a{color:#06c;text-decoration:none}
+a:hover{text-decoration:underline}
+.dir a::before{content:'📁 '}
+.file a::before{content:'📄 '}
+footer{margin-top:3em;color:#888;font-size:.85em;border-top:1px solid #eee;padding-top:1em}
+</style></head><body>
+
+<h1>{{repo_heading}}</h1>
+
+{{disclaimer_html}}
+
+<h2 style='font-size:1.1em;color:#444;margin-top:1.5em'>{{viewing_heading}}</h2>
+<div class='breadcrumb'>{{breadcrumb}}</div>
+{{parent_link}}
+
+<table id='listing'>
+<thead><tr>
+<th class='sortable' data-col='name' data-type='text'>Name</th>
+<th class='sortable' data-col='size' data-type='num' style='text-align:right'>Size</th>
+</tr></thead>
+<tbody>
+{{rows}}
+</tbody>
+</table>
+
+<script>
+(function() {
+  const table = document.getElementById('listing');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  const headers = table.querySelectorAll('th.sortable');
+
+  function rowSortKey(row, col, type) {
+    if (col === 'name') {
+      return row.querySelector('a').textContent.toLowerCase();
+    }
+    if (col === 'size') {
+      const v = row.getAttribute('data-size');
+      return v === null ? -1 : parseFloat(v);
+    }
+    return '';
+  }
+
+  function isDir(row) { return row.classList.contains('dir'); }
+
+  function sortBy(col, type, direction) {
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const dirs  = rows.filter(isDir);
+    const files = rows.filter(r => !isDir(r));
+
+    const sortFn = (a, b) => {
+      const ka = rowSortKey(a, col, type);
+      const kb = rowSortKey(b, col, type);
+      if (type === 'num') return direction === 'asc' ? ka - kb : kb - ka;
+      return direction === 'asc' ? String(ka).localeCompare(String(kb))
+                                  : String(kb).localeCompare(String(ka));
+    };
+
+    dirs.sort(sortFn);
+    files.sort(sortFn);
+
+    // Re-append in order: directories first, then files
+    tbody.innerHTML = '';
+    dirs.forEach(r => tbody.appendChild(r));
+    files.forEach(r => tbody.appendChild(r));
+  }
+
+  headers.forEach(h => {
+    h.addEventListener('click', () => {
+      const col  = h.getAttribute('data-col');
+      const type = h.getAttribute('data-type');
+      const wasAsc = h.classList.contains('asc');
+      // Reset all headers, then mark this one
+      headers.forEach(x => x.classList.remove('asc', 'desc'));
+      const direction = wasAsc ? 'desc' : 'asc';
+      h.classList.add(direction);
+      sortBy(col, type, direction);
+    });
+  });
+
+  // Default sort: name ascending
+  const defaultHeader = table.querySelector("th[data-col='name']");
+  if (defaultHeader) defaultHeader.click();
+})();
+</script>
+
+<footer>
+{{host_note}}<br>
+Files can be read remotely via <code>terra::rast("/vsicurl/&lt;URL&gt;")</code> in R, or any GDAL-aware tool.<br>
+Last updated: {{timestamp}}
+</footer>
+</body></html>

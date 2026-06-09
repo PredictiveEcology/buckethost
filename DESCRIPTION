@@ -1,0 +1,36 @@
+Package: buckethost
+Type: Package
+Title: Host and Catalogue Files on S3-Compatible Object Storage
+Version: 0.0.1
+Authors@R: c(
+    person("Eliot", "McIntire", email = "eliotmcintire@gmail.com",
+           role = c("aut", "cre")),
+    person("PredictiveEcology", role = c("cph", "fnd")))
+Description: Tools to publish, browse, and maintain datasets on any
+    S3-compatible object store (Amazon S3, OpenStack Swift, Ceph, MinIO,
+    Cloudflare R2, Backblaze B2). Generates browsable, self-contained static
+    HTML catalogues for a bucket; wraps 'rclone' for uploads, deletes, and
+    integrity checks; and builds '/vsicurl/' URLs so Cloud-Optimized GeoTIFFs
+    can be read remotely with 'GDAL' (e.g. via 'terra') without downloading
+    whole files. Originally built to host open geospatial data on the Digital
+    Research Alliance of Canada's Arbutus object storage.
+License: GPL-3
+Encoding: UTF-8
+Language: en-CA
+Roxygen: list(markdown = TRUE)
+Imports:
+    utils,
+    xml2
+Suggests:
+    knitr,
+    rmarkdown,
+    terra,
+    testthat (>= 3.0.0),
+    yaml
+SystemRequirements: rclone (https://rclone.org) for bucket_upload(),
+    bucket_delete(), bucket_verify(), and uploading generated indexes
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://github.com/PredictiveEcology/buckethost
+BugReports: https://github.com/PredictiveEcology/buckethost/issues
+Config/roxygen2/version: 8.0.0
