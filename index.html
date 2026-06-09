@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Host and Catalogue Files on S3-Compatible Object Storage • buckethost</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Host and Catalogue Files on S3-Compatible Object Storage">
 <meta name="description" content="Tools to publish, browse, and maintain datasets on any S3-compatible object store (Amazon S3, OpenStack Swift, Ceph, MinIO, Cloudflare R2, Backblaze B2). Generates browsable, self-contained static HTML catalogues for a bucket; wraps rclone for uploads, deletes, and integrity checks; and builds /vsicurl/ URLs so Cloud-Optimized GeoTIFFs can be read remotely with GDAL (e.g. via terra) without downloading whole files. Originally built to host open geospatial data on the Digital Research Alliance of Canada's Arbutus object storage.">
@@ -68,26 +68,26 @@
 <col width="31%">
 <col width="68%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Job</th>
 <th>Functions</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>
 <strong>Discover</strong> what’s in a bucket</td>
 <td>
 <code><a href="reference/bucket_ls.html">bucket_ls()</a></code>, <code><a href="reference/bucket_url.html">bucket_url()</a></code>, <code><a href="reference/bucket_raster.html">bucket_raster()</a></code>
 </td>
 </tr>
-<tr class="even">
+<tr>
 <td>
 <strong>Mutate</strong> the bucket (loudly)</td>
 <td>
 <code><a href="reference/bucket_upload.html">bucket_upload()</a></code>, <code><a href="reference/bucket_delete.html">bucket_delete()</a></code>
 </td>
 </tr>
-<tr class="odd">
+<tr>
 <td>
 <strong>Maintain</strong> a browsable catalogue + integrity</td>
 <td>
@@ -101,7 +101,7 @@
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"PredictiveEcology/buckethost"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"PredictiveEcology/buckethost"</span><span class="op">)</span></span></code></pre></div>
 <p>Upload/delete/verify shell out to <a href="https://rclone.org" class="external-link"><code>rclone</code></a>; install it and configure a remote with <code>rclone config</code> (see the migration vignette). Listing and index generation only need a public-read bucket — no credentials.</p>
 </div>
 <div class="section level2">

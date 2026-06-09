@@ -11,6 +11,7 @@ Functions resolve connection details from options (or `BUCKETHOST_*`
 environment variables). Set them once — ideally in your `.Rprofile`:
 
 ``` r
+
 library(buckethost)
 
 options(
@@ -37,6 +38,7 @@ and
 show how these combine:
 
 ``` r
+
 bucket_base_url()        #> "https://object-arbutus.cloud.computecanada.ca/predictiveecology"
 bucket_rclone_remote()   #> "arbutus:predictiveecology"
 ```
@@ -48,6 +50,7 @@ reads the bucket’s public listing API (no credentials needed for a
 public-read bucket) and returns one row per object:
 
 ``` r
+
 objs <- bucket_ls(prefix = "SCANFI_v2/1985")
 head(objs)
 #>                                          key      size                  modified
@@ -57,6 +60,7 @@ head(objs)
 Build URLs from keys:
 
 ``` r
+
 bucket_url("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 #> "https://object-arbutus.cloud.computecanada.ca/predictiveecology/SCANFI_v2/1985/..."
 ```
@@ -68,6 +72,7 @@ wraps `terra::rast("/vsicurl/<url>")`. For a Cloud-Optimized GeoTIFF,
 GDAL fetches only the byte ranges it needs:
 
 ``` r
+
 r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 r                       # metadata only; nothing downloaded yet
 
@@ -82,6 +87,7 @@ Uploads and deletes wrap `rclone` and fail loudly with rclone’s own
 error text. rclone only transfers changes, so re-running is cheap.
 
 ``` r
+
 bucket_upload("~/local/SCANFI/1985", "SCANFI_v2/1985",
               filter_file = "~/scanfi.filter",
               extra = c("--retries", "10", "--stats", "60s"))
@@ -102,6 +108,7 @@ writes one `index.html` per folder level (sortable columns, breadcrumbs,
 a per-page disclaimer block) and uploads them:
 
 ``` r
+
 generate_indexes(
   heading = "PredictiveEcology Temporary Data Repository",
   disclaimer_html = paste0(
@@ -118,6 +125,7 @@ pages without uploading by passing `dry_run = TRUE`, which returns the
 HTML:
 
 ``` r
+
 pages <- generate_indexes(dry_run = TRUE)
 cat(pages[[""]])        # the root index.html
 ```
@@ -125,6 +133,7 @@ cat(pages[[""]])        # the root index.html
 To customise the look, copy the shipped template and edit it:
 
 ``` r
+
 file.copy(
   system.file("templates", "index.html", package = "buckethost"),
   "my-template.html"

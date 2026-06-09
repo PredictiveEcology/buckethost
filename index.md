@@ -11,15 +11,16 @@ Cloudflare R2, Backblaze B2.
 
 It does three things:
 
-| Job                                            | Functions                                                                                                                                                                                                                                                                        |
-|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Discover** what’s in a bucket                | [`bucket_ls()`](https://predictiveecology.github.io/buckethost/reference/bucket_ls.md), [`bucket_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_url.md), [`bucket_raster()`](https://predictiveecology.github.io/buckethost/reference/bucket_raster.md) |
-| **Mutate** the bucket (loudly)                 | [`bucket_upload()`](https://predictiveecology.github.io/buckethost/reference/bucket_upload.md), [`bucket_delete()`](https://predictiveecology.github.io/buckethost/reference/bucket_delete.md)                                                                                   |
-| **Maintain** a browsable catalogue + integrity | [`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md), [`bucket_verify()`](https://predictiveecology.github.io/buckethost/reference/bucket_verify.md)                                                                             |
+| Job | Functions |
+|----|----|
+| **Discover** what’s in a bucket | [`bucket_ls()`](https://predictiveecology.github.io/buckethost/reference/bucket_ls.md), [`bucket_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_url.md), [`bucket_raster()`](https://predictiveecology.github.io/buckethost/reference/bucket_raster.md) |
+| **Mutate** the bucket (loudly) | [`bucket_upload()`](https://predictiveecology.github.io/buckethost/reference/bucket_upload.md), [`bucket_delete()`](https://predictiveecology.github.io/buckethost/reference/bucket_delete.md) |
+| **Maintain** a browsable catalogue + integrity | [`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md), [`bucket_verify()`](https://predictiveecology.github.io/buckethost/reference/bucket_verify.md) |
 
 ## Installation
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("PredictiveEcology/buckethost")
 ```
@@ -35,6 +36,7 @@ Most functions resolve their connection details from options (or
 `BUCKETHOST_*` environment variables), so set them once per session:
 
 ``` r
+
 options(
   buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
   buckethost.container = "predictiveecology",
@@ -45,6 +47,7 @@ options(
 ## Read remote rasters without downloading
 
 ``` r
+
 library(buckethost)
 
 r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
@@ -58,6 +61,7 @@ terra::plot(sub)
 ## Build a browsable catalogue
 
 ``` r
+
 generate_indexes(
   heading = "PredictiveEcology Temporary Data Repository",
   disclaimer_html = paste0(

@@ -177,6 +177,7 @@ rclone check \
 The equivalent from R, once `buckethost` is configured:
 
 ``` r
+
 bucket_verify("gdrive-or-local/1985", "SCANFI_v2/1985",
               filter_file = "~/scanfi.filter")$ok
 ```
@@ -186,6 +187,7 @@ bucket_verify("gdrive-or-local/1985", "SCANFI_v2/1985",
 From any R session with the `arbutus` rclone remote configured:
 
 ``` r
+
 library(buckethost)
 options(
   buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
@@ -217,6 +219,7 @@ any time data is added or changed.
 ## Phase 4 — the actual payoff: read it from anywhere
 
 ``` r
+
 library(terra)
 r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 r                                            # metadata only

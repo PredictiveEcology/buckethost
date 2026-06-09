@@ -35,6 +35,7 @@ Most functions default their connection details from options (falling
 back to environment variables), so you set them once per session and
 omit them everywhere after:
 
+
     options(
       buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
       buckethost.container = "predictiveecology",
