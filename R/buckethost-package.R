@@ -4,14 +4,14 @@
 #' readable data repository. It has three jobs:
 #'
 #' \describe{
-#'   \item{Discover}{[bucket_ls()] lists objects via the bucket's public S3
-#'     listing API; [bucket_url()] and [bucket_raster()] build the HTTPS /
+#'   \item{Discover}{[bucketLs()] lists objects via the bucket's public S3
+#'     listing API; [bucketUrl()] and [bucketRaster()] build the HTTPS /
 #'     `/vsicurl/` URLs you read from.}
-#'   \item{Mutate}{[bucket_upload()] and [bucket_delete()] wrap `rclone` so
+#'   \item{Mutate}{[bucketUpload()] and [bucketDelete()] wrap `rclone` so
 #'     transfers are robust and failures are loud.}
-#'   \item{Maintain}{[generate_indexes()] writes a static `index.html` for
+#'   \item{Maintain}{[generateIndexes()] writes a static `index.html` for
 #'     every "folder" in the bucket so it can be browsed in a web browser;
-#'     [bucket_verify()] checks a local tree against the remote.}
+#'     [bucketVerify()] checks a local tree against the remote.}
 #' }
 #'
 #' @section Configuration:
@@ -28,7 +28,7 @@
 #' }
 #'
 #' The equivalent environment variables are `BUCKETHOST_ENDPOINT`,
-#' `BUCKETHOST_CONTAINER`, and `BUCKETHOST_REMOTE`. See [bucket_config].
+#' `BUCKETHOST_CONTAINER`, and `BUCKETHOST_REMOTE`. See [bucketConfig].
 #'
 #' @keywords internal
 #' @importFrom utils URLencode

@@ -36,23 +36,23 @@ Three identifiers, easily confused:
 - **endpoint** — the storage host, no bucket name.
 - **container** — the bucket name.
 - **remote** — the *local* name of your `rclone` remote (from `rclone config`).
-  Only the mutating functions (`bucket_upload()`, `bucket_delete()`,
-  `bucket_verify()`, and uploading indexes) use it.
+  Only the mutating functions (`bucketUpload()`, `bucketDelete()`,
+  `bucketVerify()`, and uploading indexes) use it.
 
-`bucket_base_url()` and `bucket_rclone_remote()` show how these combine:
+`bucketBaseUrl()` and `bucketRcloneRemote()` show how these combine:
 
 ```{r}
-bucket_base_url()        #> "https://object-arbutus.cloud.computecanada.ca/predictiveecology"
-bucket_rclone_remote()   #> "arbutus:predictiveecology"
+bucketBaseUrl()        #> "https://object-arbutus.cloud.computecanada.ca/predictiveecology"
+bucketRcloneRemote()   #> "arbutus:predictiveecology"
 ```
 
 ## Discover what's there
 
-`bucket_ls()` reads the bucket's public listing API (no credentials needed for
+`bucketLs()` reads the bucket's public listing API (no credentials needed for
 a public-read bucket) and returns one row per object:
 
 ```{r}
-objs <- bucket_ls(prefix = "SCANFI_v2/1985")
+objs <- bucketLs(prefix = "SCANFI_v2/1985")
 head(objs)
 #>                                          key      size                  modified
 #> 1 SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif 154238911 2026-01-19T...
@@ -61,17 +61,17 @@ head(objs)
 Build URLs from keys:
 
 ```{r}
-bucket_url("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+bucketUrl("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 #> "https://object-arbutus.cloud.computecanada.ca/predictiveecology/SCANFI_v2/1985/..."
 ```
 
 ## Read rasters remotely
 
-`bucket_raster()` wraps `terra::rast("/vsicurl/<url>")`. For a Cloud-Optimized
+`bucketRaster()` wraps `terra::rast("/vsicurl/<url>")`. For a Cloud-Optimized
 GeoTIFF, GDAL fetches only the byte ranges it needs:
 
 ```{r}
-r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+r <- bucketRaster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 r                       # metadata only; nothing downloaded yet
 
 aoi <- terra::vect(my_study_area)
@@ -85,41 +85,41 @@ Uploads and deletes wrap `rclone` and fail loudly with rclone's own error
 text. rclone only transfers changes, so re-running is cheap.
 
 ```{r}
-bucket_upload("~/local/SCANFI/1985", "SCANFI_v2/1985",
-              filter_file = "~/scanfi.filter",
+bucketUpload("~/local/SCANFI/1985", "SCANFI_v2/1985",
+              filterFile = "~/scanfi.filter",
               extra = c("--retries", "10", "--stats", "60s"))
 
-res <- bucket_verify("~/local/SCANFI/1985", "SCANFI_v2/1985",
-                     filter_file = "~/scanfi.filter")
+res <- bucketVerify("~/local/SCANFI/1985", "SCANFI_v2/1985",
+                     filterFile = "~/scanfi.filter")
 res$ok
 
-bucket_delete("SCANFI_v2/1985/obsolete.tif")          # prompts to confirm
-bucket_delete("SCANFI_v2/old", recursive = TRUE,
+bucketDelete("SCANFI_v2/1985/obsolete.tif")          # prompts to confirm
+bucketDelete("SCANFI_v2/old", recursive = TRUE,
               confirm = FALSE)                         # whole prefix, no prompt
 ```
 
 ## Generate the browsable catalogue
 
-`generate_indexes()` writes one `index.html` per folder level (sortable
+`generateIndexes()` writes one `index.html` per folder level (sortable
 columns, breadcrumbs, a per-page disclaimer block) and uploads them:
 
 ```{r}
-generate_indexes(
+generateIndexes(
   heading = "PredictiveEcology Temporary Data Repository",
-  disclaimer_html = paste0(
+  disclaimerHtml = paste0(
     "<div class='hero'><p><strong>These data are not produced by the ",
     "PredictiveEcology group</strong> and are only hosted here to ease ",
     "open data access.</p></div>"
   ),
-  host_note = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
+  hostNote = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
 )
 ```
 
 Browse the result at `<endpoint>/<container>/index.html`. Inspect the pages
-without uploading by passing `dry_run = TRUE`, which returns the HTML:
+without uploading by passing `dryRun = TRUE`, which returns the HTML:
 
 ```{r}
-pages <- generate_indexes(dry_run = TRUE)
+pages <- generateIndexes(dryRun = TRUE)
 cat(pages[[""]])        # the root index.html
 ```
 
@@ -130,5 +130,5 @@ file.copy(
   system.file("templates", "index.html", package = "buckethost"),
   "my-template.html"
 )
-generate_indexes(template = "my-template.html")
+generateIndexes(template = "my-template.html")
 ```

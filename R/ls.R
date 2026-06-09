@@ -1,7 +1,7 @@
 # Walk a bucket's public S3 listing API, following pagination markers.
 # `base_url` is the public bucket URL (endpoint/container). The bucket must
 # allow anonymous listing (public-read) for this to work without credentials.
-fetch_all_keys <- function(base_url, prefix = "") {
+fetchAllKeys <- function(base_url, prefix = "") {
   out <- list()
   marker <- ""
   repeat {
@@ -57,27 +57,27 @@ fetch_all_keys <- function(base_url, prefix = "") {
 #'
 #' @param prefix Optional key prefix to restrict the listing, e.g.
 #'   `"SCANFI_v2/1985"`. Default `""` lists everything.
-#' @inheritParams bucket_config
-#' @param include_indexes If `FALSE` (default), generated `index.html` files
+#' @inheritParams bucketConfig
+#' @param includeIndexes If `FALSE` (default), generated `index.html` files
 #'   are dropped from the result so you see only data objects.
 #'
 #' @return A `data.frame` with columns `key`, `size` (bytes), and `modified`
 #'   (ISO-8601 string), sorted by key.
-#' @seealso [bucket_url()], [generate_indexes()]
+#' @seealso [bucketUrl()], [generateIndexes()]
 #' @export
 #' @examples
 #' \dontrun{
-#' bucket_ls(prefix = "SCANFI_v2/1985",
+#' bucketLs(prefix = "SCANFI_v2/1985",
 #'           endpoint = "https://object-arbutus.cloud.computecanada.ca",
 #'           container = "predictiveecology")
 #' }
-bucket_ls <- function(prefix = "",
+bucketLs <- function(prefix = "",
                       container = NULL,
                       endpoint = NULL,
-                      include_indexes = FALSE) {
-  base_url <- bucket_base_url(container, endpoint)
-  df <- fetch_all_keys(base_url, prefix = prefix)
-  if (!include_indexes && nrow(df) > 0) {
+                      includeIndexes = FALSE) {
+  base_url <- bucketBaseUrl(container, endpoint)
+  df <- fetchAllKeys(base_url, prefix = prefix)
+  if (!includeIndexes && nrow(df) > 0) {
     df <- df[!grepl("(^|/)index\\.html$", df$key), , drop = FALSE]
   }
   df <- df[order(df$key), , drop = FALSE]

@@ -14,7 +14,7 @@ makeMirrorManifest(
 }
 \arguments{
 \item{bucket}{Container (bucket) name. When \code{NULL} (default), resolved via
-\code{\link[=bucket_container]{bucket_container()}}.}
+\code{\link[=bucketContainer]{bucketContainer()}}.}
 
 \item{prefix}{Optional key prefix to restrict the manifest, e.g.
 \code{"SCANFI_v2/1985"}. Default \code{""} (the whole bucket).}
@@ -23,7 +23,7 @@ makeMirrorManifest(
 the folder is listed recursively and an \code{id} column is added, matched to
 the bucket objects by file name. Requires the \pkg{googledrive} package.}
 
-\item{endpoint}{Optional endpoint override (see \link{bucket_config}).}
+\item{endpoint}{Optional endpoint override (see \link{bucketConfig}).}
 
 \item{file}{Optional path to write the manifest to as CSV. When \code{NULL}
 (default) no file is written.}
@@ -62,5 +62,5 @@ makeMirrorManifest("predictiveecology", "SCANFI_v2/",
 }
 }
 \seealso{
-\code{\link[=bucket_ls]{bucket_ls()}}, \code{\link[=bucket_url]{bucket_url()}}
+\code{\link[=bucketLs]{bucketLs()}}, \code{\link[=bucketUrl]{bucketUrl()}}
 }

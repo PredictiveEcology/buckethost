@@ -8,21 +8,21 @@ reference:
   desc: >
     Find what's in a bucket and build the URLs you read from.
   contents:
-  - bucket_ls
-  - bucket_url
-  - bucket_raster
+  - bucketLs
+  - bucketUrl
+  - bucketRaster
 - title: Mutate
   desc: >
     Upload to and delete from a bucket. Thin, loud wrappers around rclone.
   contents:
-  - bucket_upload
-  - bucket_delete
+  - bucketUpload
+  - bucketDelete
 - title: Maintain
   desc: >
     Generate the browsable HTML catalogue and check integrity.
   contents:
-  - generate_indexes
-  - bucket_verify
+  - generateIndexes
+  - bucketVerify
 - title: Mirror
   desc: >
     Map a bucket's contents (and optional Google Drive source) to a manifest.
@@ -32,7 +32,7 @@ reference:
   desc: >
     Resolve connection details from options / environment variables.
   contents:
-  - bucket_config
+  - bucketConfig
 - title: Package
   contents:
   - buckethost-package

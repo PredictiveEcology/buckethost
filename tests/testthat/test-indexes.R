@@ -1,5 +1,5 @@
 # A small synthetic object table standing in for a real bucket listing.
-fake_files <- function() {
+fakeFiles <- function() {
   data.frame(
     key = c(
       "README.txt",
@@ -16,14 +16,14 @@ fake_files <- function() {
 opts <- function() {
   list(
     heading = "Test Repo",
-    disclaimer_html = "<div class='hero'><p>hello</p></div>",
-    host_note = "Hosted somewhere.",
-    root_label = "testbucket",
+    disclaimerHtml = "<div class='hero'><p>hello</p></div>",
+    hostNote = "Hosted somewhere.",
+    rootLabel = "testbucket",
     timestamp = "2026-06-09 12:00 UTC"
   )
 }
 
-read_template <- function() {
+readTemplate <- function() {
   paste(
     readLines(
       system.file("templates", "index.html", package = "buckethost"),
@@ -33,47 +33,47 @@ read_template <- function() {
   )
 }
 
-test_that("build_index_pages emits one page per directory incl. root", {
-  built <- buckethost:::build_index_pages(fake_files(), read_template(), opts())
+test_that("buildIndexPages emits one page per directory incl. root", {
+  built <- buckethost:::buildIndexPages(fakeFiles(), readTemplate(), opts())
   expect_setequal(
     names(built$html),
     c("", "SCANFI_v2", "SCANFI_v2/1985", "SCANFI_v2/1990")
   )
   # counts line up with pages, and the root has 1 dir (SCANFI_v2) + 1 file
-  expect_length(built$n_dirs, length(built$html))
+  expect_length(built$nDirs, length(built$html))
   root <- which(names(built$html) == "")
-  expect_equal(built$n_dirs[root], 1L)
-  expect_equal(built$n_files[root], 1L)
+  expect_equal(built$nDirs[root], 1L)
+  expect_equal(built$nFiles[root], 1L)
 })
 
 test_that("root page lists top-level dir and file, not nested files", {
-  parts <- buckethost:::build_page_parts(
-    "", fake_files(), root_label = "testbucket"
+  parts <- buckethost:::buildPageParts(
+    "", fakeFiles(), rootLabel = "testbucket"
   )
-  expect_equal(parts$n_dirs, 1L) # SCANFI_v2/
-  expect_equal(parts$n_files, 1L) # README.txt
+  expect_equal(parts$nDirs, 1L) # SCANFI_v2/
+  expect_equal(parts$nFiles, 1L) # README.txt
   expect_match(parts$rows, "SCANFI_v2/index.html")
   expect_match(parts$rows, "README.txt")
   expect_false(grepl("age.tif", parts$rows)) # nested, not shown at root
 })
 
 test_that("leaf page lists its files with sizes and data-size attrs", {
-  parts <- buckethost:::build_page_parts(
-    "SCANFI_v2/1985", fake_files(), root_label = "testbucket"
+  parts <- buckethost:::buildPageParts(
+    "SCANFI_v2/1985", fakeFiles(), rootLabel = "testbucket"
   )
-  expect_equal(parts$n_files, 2L)
-  expect_equal(parts$n_dirs, 0L)
+  expect_equal(parts$nFiles, 2L)
+  expect_equal(parts$nDirs, 0L)
   expect_match(parts$rows, "biomass.tif")
   expect_match(parts$rows, "3.00 GB") # 3 * 1024^3
   expect_match(parts$rows, "data-size='3221225472'")
 })
 
 test_that("breadcrumb depth and parent links scale with nesting", {
-  root <- buckethost:::build_page_parts("", fake_files(), "testbucket")
-  expect_equal(root$parent_link, "") # no parent at root
+  root <- buckethost:::buildPageParts("", fakeFiles(), "testbucket")
+  expect_equal(root$parentLink, "") # no parent at root
 
-  leaf <- buckethost:::build_page_parts("SCANFI_v2/1985", fake_files(), "testbucket")
-  expect_match(leaf$parent_link, "../index.html")
+  leaf <- buckethost:::buildPageParts("SCANFI_v2/1985", fakeFiles(), "testbucket")
+  expect_match(leaf$parentLink, "../index.html")
   # root link climbs two levels from depth-2 dir
   expect_match(leaf$breadcrumb, "\\.\\./\\.\\./\\./index.html")
   expect_match(leaf$breadcrumb, ">testbucket<")
@@ -81,7 +81,7 @@ test_that("breadcrumb depth and parent links scale with nesting", {
 })
 
 test_that("full page substitutes all template tokens (no leftovers)", {
-  pages <- buckethost:::build_index_pages(fake_files(), read_template(), opts())$html
+  pages <- buckethost:::buildIndexPages(fakeFiles(), readTemplate(), opts())$html
   root <- pages[[which(names(pages) == "")]]
   expect_false(grepl("{{", root, fixed = TRUE))
   expect_match(root, "<h1>Test Repo</h1>")
@@ -89,11 +89,11 @@ test_that("full page substitutes all template tokens (no leftovers)", {
   expect_match(root, "Repository contents")
 })
 
-test_that("dry_run builds pages without needing rclone or network", {
-  pages <- generate_indexes(
-    all_files = fake_files(),
+test_that("dryRun builds pages without needing rclone or network", {
+  pages <- generateIndexes(
+    allFiles = fakeFiles(),
     heading = "Test Repo",
-    dry_run = TRUE,
+    dryRun = TRUE,
     quiet = TRUE
   )
   expect_true(length(pages) >= 4)
@@ -101,17 +101,17 @@ test_that("dry_run builds pages without needing rclone or network", {
 })
 
 test_that("the upload loop handles the root (\"\") page without subscript error", {
-  # Regression: generate_indexes() indexed pages by name, but the root page's
+  # Regression: generateIndexes() indexed pages by name, but the root page's
   # name is "" and pages[[\"\"]] is a subscript-out-of-bounds error. Exercise
   # the real (non-dry-run) upload loop with `true` standing in for rclone so
   # every copyto "succeeds" without touching the network.
   skip_if_not(nzchar(Sys.which("true")), "no `true` executable to stand in for rclone")
 
   expect_no_error(
-    pages <- generate_indexes(
-      all_files = fake_files(),
+    pages <- generateIndexes(
+      allFiles = fakeFiles(),
       heading = "Test Repo",
-      rclone_path = "true",
+      rclonePath = "true",
       quiet = TRUE
     )
   )

@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head><meta charset='utf-8'>
-<title>{{page_title}}</title>
+<title>{{pageTitle}}</title>
 <style>
 body{font-family:system-ui,-apple-system,sans-serif;max-width:1000px;margin:2em auto;padding:0 1em;color:#222}
 h1{font-size:1.5em;margin-bottom:.4em}
@@ -21,13 +21,13 @@ a:hover{text-decoration:underline}
 footer{margin-top:3em;color:#888;font-size:.85em;border-top:1px solid #eee;padding-top:1em}
 </style></head><body>
 
-<h1>{{repo_heading}}</h1>
+<h1>{{repoHeading}}</h1>
 
-{{disclaimer_html}}
+{{disclaimerHtml}}
 
-<h2 style='font-size:1.1em;color:#444;margin-top:1.5em'>{{viewing_heading}}</h2>
+<h2 style='font-size:1.1em;color:#444;margin-top:1.5em'>{{viewingHeading}}</h2>
 <div class='breadcrumb'>{{breadcrumb}}</div>
-{{parent_link}}
+{{parentLink}}
 
 <table id='listing'>
 <thead><tr>
@@ -101,7 +101,7 @@ footer{margin-top:3em;color:#888;font-size:.85em;border-top:1px solid #eee;paddi
 </script>
 
 <footer>
-{{host_note}}<br>
+{{hostNote}}<br>
 Files can be read remotely via <code>terra::rast("/vsicurl/&lt;URL&gt;")</code> in R, or any GDAL-aware tool.<br>
 Last updated: {{timestamp}}
 </footer>

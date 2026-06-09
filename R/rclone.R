@@ -5,13 +5,13 @@
 # default, raises an R error carrying rclone's own message.
 
 # Is rclone on PATH (or at `path`)?
-rclone_available <- function(path = "rclone") {
+rcloneAvailable <- function(path = "rclone") {
   nzchar(Sys.which(path))
 }
 
 # Stop with a helpful message if rclone is missing.
-require_rclone <- function(path = "rclone") {
-  if (!rclone_available(path)) {
+requireRclone <- function(path = "rclone") {
+  if (!rcloneAvailable(path)) {
     stop(
       "Could not find the 'rclone' executable",
       if (path != "rclone") sprintf(" at '%s'", path) else "",
@@ -28,7 +28,7 @@ require_rclone <- function(path = "rclone") {
 # invisibly. On non-zero exit, errors (unless `error = FALSE`) with rclone's
 # stderr included.
 rclone <- function(args, path = "rclone", error = TRUE, echo = FALSE) {
-  require_rclone(path)
+  requireRclone(path)
   if (echo) {
     message("+ ", path, " ", paste(args, collapse = " "))
   }

@@ -16,9 +16,9 @@ It does three things:
 
 | Job | Functions |
 |-----|-----------|
-| **Discover** what's in a bucket | `bucket_ls()`, `bucket_url()`, `bucket_raster()` |
-| **Mutate** the bucket (loudly) | `bucket_upload()`, `bucket_delete()` |
-| **Maintain** a browsable catalogue + integrity | `generate_indexes()`, `bucket_verify()` |
+| **Discover** what's in a bucket | `bucketLs()`, `bucketUrl()`, `bucketRaster()` |
+| **Mutate** the bucket (loudly) | `bucketUpload()`, `bucketDelete()` |
+| **Maintain** a browsable catalogue + integrity | `generateIndexes()`, `bucketVerify()` |
 
 ## Installation
 
@@ -49,7 +49,7 @@ options(
 ```r
 library(buckethost)
 
-r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+r <- bucketRaster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 r                          # opens metadata only — no full download
 
 aoi <- terra::vect(my_study_area)
@@ -60,14 +60,14 @@ terra::plot(sub)
 ## Build a browsable catalogue
 
 ```r
-generate_indexes(
+generateIndexes(
   heading = "PredictiveEcology Temporary Data Repository",
-  disclaimer_html = paste0(
+  disclaimerHtml = paste0(
     "<div class='hero'><p><strong>These data are not produced by the ",
     "PredictiveEcology group</strong> and are only hosted here to ease open ",
     "data access.</p></div>"
   ),
-  host_note = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
+  hostNote = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
 )
 ```
 
@@ -77,9 +77,9 @@ breadcrumbs, per-page disclaimer) and uploads them. Browse the result at
 
 The HTML is produced from a template you can override
 (`system.file("templates", "index.html", package = "buckethost")`); pass
-`template = "my-template.html"` to customise it. Tokens: `{{page_title}}`,
-`{{repo_heading}}`, `{{disclaimer_html}}`, `{{viewing_heading}}`,
-`{{breadcrumb}}`, `{{parent_link}}`, `{{rows}}`, `{{host_note}}`,
+`template = "my-template.html"` to customise it. Tokens: `{{pageTitle}}`,
+`{{repoHeading}}`, `{{disclaimerHtml}}`, `{{viewingHeading}}`,
+`{{breadcrumb}}`, `{{parentLink}}`, `{{rows}}`, `{{hostNote}}`,
 `{{timestamp}}`.
 
 ## Migrate data into a bucket

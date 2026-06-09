@@ -7,13 +7,13 @@
 #' CSV.
 #'
 #' @param bucket Container (bucket) name. When `NULL` (default), resolved via
-#'   [bucket_container()].
+#'   [bucketContainer()].
 #' @param prefix Optional key prefix to restrict the manifest, e.g.
 #'   `"SCANFI_v2/1985"`. Default `""` (the whole bucket).
 #' @param driveFolder Optional Google Drive folder id or URL. When supplied,
 #'   the folder is listed recursively and an `id` column is added, matched to
 #'   the bucket objects by file name. Requires the \pkg{googledrive} package.
-#' @param endpoint Optional endpoint override (see [bucket_config]).
+#' @param endpoint Optional endpoint override (see [bucketConfig]).
 #' @param file Optional path to write the manifest to as CSV. When `NULL`
 #'   (default) no file is written.
 #'
@@ -27,7 +27,7 @@
 #' @return A `data.frame` with columns `filename`, `key`, `url`, and (when
 #'   `driveFolder` is given) `id`. Returned invisibly when `file` is written,
 #'   visibly otherwise.
-#' @seealso [bucket_ls()], [bucket_url()]
+#' @seealso [bucketLs()], [bucketUrl()]
 #' @export
 #' @examples
 #' \dontrun{
@@ -47,12 +47,12 @@ makeMirrorManifest <- function(bucket = NULL,
                                driveFolder = NULL,
                                endpoint = NULL,
                                file = NULL) {
-  objs <- bucket_ls(prefix = prefix, container = bucket, endpoint = endpoint)
+  objs <- bucketLs(prefix = prefix, container = bucket, endpoint = endpoint)
 
   m <- data.frame(
     filename = basename(objs$key),
     key = objs$key,
-    url = bucket_url(objs$key, container = bucket, endpoint = endpoint),
+    url = bucketUrl(objs$key, container = bucket, endpoint = endpoint),
     stringsAsFactors = FALSE
   )
 

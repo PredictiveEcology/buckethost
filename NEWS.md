@@ -1,3 +1,29 @@
+# buckethost 0.1.0
+
+## Breaking changes
+
+* All functions and multi-word arguments are now **camelCase**, to match the
+  PredictiveEcology package family. Renames: `generate_indexes()` ->
+  `generateIndexes()`, `bucket_ls()` -> `bucketLs()`, `bucket_url()` ->
+  `bucketUrl()`, `bucket_raster()` -> `bucketRaster()`, `bucket_upload()` ->
+  `bucketUpload()`, `bucket_delete()` -> `bucketDelete()`, `bucket_verify()`
+  -> `bucketVerify()`, `bucket_endpoint()` -> `bucketEndpoint()`,
+  `bucket_container()` -> `bucketContainer()`, `bucket_remote()` ->
+  `bucketRemote()`, `bucket_base_url()` -> `bucketBaseUrl()`,
+  `bucket_rclone_remote()` -> `bucketRcloneRemote()`. Arguments likewise (e.g.
+  `dry_run` -> `dryRun`, `rclone_path` -> `rclonePath`, `filter_file` ->
+  `filterFile`, `remote_path` -> `remotePath`, `disclaimer_html` ->
+  `disclaimerHtml`, `host_note` -> `hostNote`, `all_files` -> `allFiles`).
+  Options follow: `buckethost.disclaimerHtml`, `buckethost.hostNote`.
+
+## Improvements
+
+* `bucketUpload()`, `bucketDelete()`, and `bucketVerify()` now accept a full
+  public URL as `remotePath` and normalise it to the object key. Previously
+  passing e.g. `"https://endpoint/container/SCANFI_v2/x.csv"` uploaded the file
+  to a bogus nested key (the URL embedded under the bucket) instead of
+  `"SCANFI_v2/x.csv"`.
+
 # buckethost 0.0.3
 
 * New `makeMirrorManifest()`: builds a "remap" `data.frame` (one row per

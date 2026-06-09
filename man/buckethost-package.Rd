@@ -11,14 +11,14 @@ readable data repository. It has three jobs:
 }
 \details{
 \describe{
-\item{Discover}{\code{\link[=bucket_ls]{bucket_ls()}} lists objects via the bucket's public S3
-listing API; \code{\link[=bucket_url]{bucket_url()}} and \code{\link[=bucket_raster]{bucket_raster()}} build the HTTPS /
+\item{Discover}{\code{\link[=bucketLs]{bucketLs()}} lists objects via the bucket's public S3
+listing API; \code{\link[=bucketUrl]{bucketUrl()}} and \code{\link[=bucketRaster]{bucketRaster()}} build the HTTPS /
 \verb{/vsicurl/} URLs you read from.}
-\item{Mutate}{\code{\link[=bucket_upload]{bucket_upload()}} and \code{\link[=bucket_delete]{bucket_delete()}} wrap \code{rclone} so
+\item{Mutate}{\code{\link[=bucketUpload]{bucketUpload()}} and \code{\link[=bucketDelete]{bucketDelete()}} wrap \code{rclone} so
 transfers are robust and failures are loud.}
-\item{Maintain}{\code{\link[=generate_indexes]{generate_indexes()}} writes a static \code{index.html} for
+\item{Maintain}{\code{\link[=generateIndexes]{generateIndexes()}} writes a static \code{index.html} for
 every "folder" in the bucket so it can be browsed in a web browser;
-\code{\link[=bucket_verify]{bucket_verify()}} checks a local tree against the remote.}
+\code{\link[=bucketVerify]{bucketVerify()}} checks a local tree against the remote.}
 }
 }
 \section{Configuration}{
@@ -36,7 +36,7 @@ options(
 }
 
 The equivalent environment variables are \code{BUCKETHOST_ENDPOINT},
-\code{BUCKETHOST_CONTAINER}, and \code{BUCKETHOST_REMOTE}. See \link{bucket_config}.
+\code{BUCKETHOST_CONTAINER}, and \code{BUCKETHOST_REMOTE}. See \link{bucketConfig}.
 }
 
 \seealso{

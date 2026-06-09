@@ -2,7 +2,7 @@
 
 # Human-readable byte sizes, vectorised. Matches the original generator's
 # thresholds: KB below 1 MiB, MB below 1 GiB, GB above.
-format_size <- function(bytes) {
+formatSize <- function(bytes) {
   ifelse(
     bytes < 1024^2,
     sprintf("%.1f KB", bytes / 1024),
@@ -16,7 +16,7 @@ format_size <- function(bytes) {
 
 # All ancestor directory paths of an object key, excluding the file itself.
 # "a/b/c.tif" -> c("a", "a/b"); "top.tif" -> character(0).
-dirs_for_key <- function(key) {
+dirsForKey <- function(key) {
   parts <- strsplit(key, "/", fixed = TRUE)[[1]]
   if (length(parts) <= 1L) {
     return(character(0))
@@ -28,7 +28,7 @@ dirs_for_key <- function(key) {
 # Minimal, dependency-free mustache-ish renderer: replaces every
 # `{{name}}` token in `template` (a single string) with replacements[[name]].
 # Replacement values are inserted literally (no regex backreferences).
-render_template <- function(template, replacements) {
+renderTemplate <- function(template, replacements) {
   stopifnot(length(template) == 1L)
   for (nm in names(replacements)) {
     template <- gsub(
@@ -43,7 +43,7 @@ render_template <- function(template, replacements) {
 
 # Escape the five XML/HTML special characters for safe interpolation into
 # attribute-free text contexts.
-html_escape <- function(x) {
+htmlEscape <- function(x) {
   x <- gsub("&", "&amp;", x, fixed = TRUE)
   x <- gsub("<", "&lt;", x, fixed = TRUE)
   x <- gsub(">", "&gt;", x, fixed = TRUE)
@@ -53,7 +53,7 @@ html_escape <- function(x) {
 }
 
 # Path to the packaged HTML template, or a user override.
-template_path <- function(template = NULL) {
+templatePath <- function(template = NULL) {
   if (!is.null(template)) {
     if (!file.exists(template)) {
       stop("Template file not found: ", template, call. = FALSE)
@@ -61,4 +61,33 @@ template_path <- function(template = NULL) {
     return(template)
   }
   system.file("templates", "index.html", package = "buckethost")
+}
+
+# Normalise a destination into an object key. A plain key is returned with any
+# leading slashes trimmed. A full public URL (what users often paste, e.g.
+# "https://endpoint/container/SCANFI_v2/x.csv") is stripped down to the key
+# ("SCANFI_v2/x.csv") so it doesn't get nested under the bucket as a literal
+# path. Stripping uses the resolved base URL first, then falls back to the
+# "/<container>/" marker for endpoints that differ from the default.
+asBucketKey <- function(path, container = NULL, endpoint = NULL) {
+  if (length(path) != 1L) {
+    return(sub("^/+", "", path))
+  }
+  if (grepl("^https?://", path)) {
+    base <- paste0(bucketBaseUrl(container, endpoint), "/")
+    if (startsWith(path, base)) {
+      return(substring(path, nchar(base) + 1L))
+    }
+    marker <- paste0("/", bucketContainer(container), "/")
+    pos <- regexpr(marker, path, fixed = TRUE)
+    if (pos > 0L) {
+      return(substring(path, pos + nchar(marker)))
+    }
+    stop(
+      "Could not derive an object key from URL (container '",
+      bucketContainer(container), "' not found in it): ", path,
+      call. = FALSE
+    )
+  }
+  sub("^/+", "", path)
 }

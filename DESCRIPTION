@@ -1,7 +1,7 @@
 Package: buckethost
 Type: Package
 Title: Host and Catalogue Files on S3-Compatible Object Storage
-Version: 0.0.3
+Version: 0.1.0
 Authors@R: c(
     person("Eliot", "McIntire", email = "eliotmcintire@gmail.com",
            role = c("aut", "cre")),
@@ -28,8 +28,8 @@ Suggests:
     terra,
     testthat (>= 3.0.0),
     yaml
-SystemRequirements: rclone (https://rclone.org) for bucket_upload(),
-    bucket_delete(), bucket_verify(), and uploading generated indexes
+SystemRequirements: rclone (https://rclone.org) for bucketUpload(),
+    bucketDelete(), bucketVerify(), and uploading generated indexes
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://github.com/PredictiveEcology/buckethost,

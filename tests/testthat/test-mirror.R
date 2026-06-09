@@ -1,6 +1,6 @@
-# Mock bucket_ls() / bucket_url() so these tests need no bucket or network.
-mock_ls <- function(prefix = "", container = NULL, endpoint = NULL,
-                    include_indexes = FALSE) {
+# Mock bucketLs() / bucketUrl() so these tests need no bucket or network.
+mockLs <- function(prefix = "", container = NULL, endpoint = NULL,
+                    includeIndexes = FALSE) {
   data.frame(
     key = c("SCANFI_v2/1985/age.tif", "SCANFI_v2/1990/age.tif",
             "SCANFI_v2/1985/biomass.tif"),
@@ -9,13 +9,13 @@ mock_ls <- function(prefix = "", container = NULL, endpoint = NULL,
     stringsAsFactors = FALSE
   )
 }
-mock_url <- function(path, container = NULL, endpoint = NULL) {
+mockUrl <- function(path, container = NULL, endpoint = NULL) {
   paste0("https://host/", container %||% "predictiveecology", "/", path)
 }
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
 test_that("makeMirrorManifest builds filename/key/url and can write CSV", {
-  testthat::local_mocked_bindings(bucket_ls = mock_ls, bucket_url = mock_url)
+  testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
 
   tmp <- tempfile(fileext = ".csv")
   on.exit(unlink(tmp), add = TRUE)
@@ -37,14 +37,14 @@ test_that("makeMirrorManifest builds filename/key/url and can write CSV", {
 })
 
 test_that("makeMirrorManifest returns invisibly when writing a file", {
-  testthat::local_mocked_bindings(bucket_ls = mock_ls, bucket_url = mock_url)
+  testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
   tmp <- tempfile(fileext = ".csv")
   on.exit(unlink(tmp), add = TRUE)
   expect_invisible(makeMirrorManifest("predictiveecology", file = tmp))
 })
 
 test_that("driveFolder without googledrive installed errors clearly", {
-  testthat::local_mocked_bindings(bucket_ls = mock_ls, bucket_url = mock_url)
+  testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
   skip_if(
     requireNamespace("googledrive", quietly = TRUE),
     "googledrive is installed; cannot test the missing-package path"
@@ -60,7 +60,7 @@ test_that("duplicate basenames warn when matching to Drive", {
     requireNamespace("googledrive", quietly = TRUE),
     "googledrive not installed"
   )
-  testthat::local_mocked_bindings(bucket_ls = mock_ls, bucket_url = mock_url)
+  testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
   # Stub googledrive::drive_ls / as_id so no real Drive call happens.
   testthat::local_mocked_bindings(
     as_id = function(x) x,
