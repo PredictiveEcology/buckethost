@@ -32,9 +32,11 @@ makeMirrorManifest(
 
 - driveFolder:
 
-  Optional Google Drive folder id or URL. When supplied, the folder is
-  listed recursively and an `id` column is added, matched to the bucket
-  objects by file name. Requires the googledrive package.
+  Optional Google Drive folder id or URL corresponding to the bucket's
+  `prefix` folder. When supplied, the folder is listed recursively and
+  an `id` column is added, matched to the bucket objects by their **path
+  relative to the folder** (see Details). Requires the googledrive
+  package.
 
 - endpoint:
 
@@ -54,11 +56,19 @@ visibly otherwise.
 
 ## Details
 
-Matching to Drive is by **file name** (`basename(key)`). If the same
-file name appears under more than one folder in the bucket, those rows
-cannot be told apart by name alone and the `id` match is ambiguous; a
-warning is issued listing the offending names. The `key` column always
-disambiguates the rows themselves.
+Matching to Drive is by **relative path**, not bare file name. The
+bucket object `SCANFI_v2/1985/age.tif` (with `prefix = "SCANFI_v2"`) is
+matched to the Drive file at `1985/age.tif` under `driveFolder`. This
+keeps identical file names under different folders (e.g. `1985/age.tif`
+and `1990/age.tif`) distinct, which a
+bare-[`basename()`](https://rdrr.io/r/base/basename.html) match cannot
+do.
+
+Because `googledrive::drive_ls(recursive = TRUE)` flattens the tree, the
+relative Drive paths are reconstructed from each item's parent chain. If
+the listing carries no parent information, the function falls back to
+file-name matching and warns. Objects with no Drive file at the matching
+path get `NA` and a count is warned.
 
 ## See also
 

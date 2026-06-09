@@ -15,7 +15,7 @@ CSV.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,9 +80,11 @@ CSV.</p>
 
 
 <dt id="arg-drivefolder">driveFolder<a class="anchor" aria-label="anchor" href="#arg-drivefolder"></a></dt>
-<dd><p>Optional Google Drive folder id or URL. When supplied,
-the folder is listed recursively and an <code>id</code> column is added, matched to
-the bucket objects by file name. Requires the <span class="pkg">googledrive</span> package.</p></dd>
+<dd><p>Optional Google Drive folder id or URL corresponding to
+the bucket's <code>prefix</code> folder. When supplied, the folder is listed
+recursively and an <code>id</code> column is added, matched to the bucket objects by
+their <strong>path relative to the folder</strong> (see Details). Requires the
+<span class="pkg">googledrive</span> package.</p></dd>
 
 
 <dt id="arg-endpoint">endpoint<a class="anchor" aria-label="anchor" href="#arg-endpoint"></a></dt>
@@ -102,11 +104,16 @@ visibly otherwise.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Matching to Drive is by <strong>file name</strong> (<code>basename(key)</code>). If the same file
-name appears under more than one folder in the bucket, those rows cannot be
-told apart by name alone and the <code>id</code> match is ambiguous; a warning is
-issued listing the offending names. The <code>key</code> column always disambiguates
-the rows themselves.</p>
+    <p>Matching to Drive is by <strong>relative path</strong>, not bare file name. The bucket
+object <code>SCANFI_v2/1985/age.tif</code> (with <code>prefix = "SCANFI_v2"</code>) is matched to
+the Drive file at <code>1985/age.tif</code> under <code>driveFolder</code>. This keeps identical
+file names under different folders (e.g. <code>1985/age.tif</code> and
+<code>1990/age.tif</code>) distinct, which a bare-<code><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename()</a></code> match cannot do.</p>
+<p>Because <code>googledrive::drive_ls(recursive = TRUE)</code> flattens the tree, the
+relative Drive paths are reconstructed from each item's parent chain. If the
+listing carries no parent information, the function falls back to file-name
+matching and warns. Objects with no Drive file at the matching path get
+<code>NA</code> and a count is warned.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

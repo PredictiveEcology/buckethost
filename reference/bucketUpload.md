@@ -1,8 +1,8 @@
 # Upload files to a bucket
 
-Thin, loud wrapper around `rclone copy`. Copies `local` (a file or
-directory) to `remotePath` within the bucket. rclone only transfers what
-has changed, so re-running is cheap and idempotent.
+Thin, loud wrapper around `rclone`. Copies `local` to `remotePath`
+within the bucket. rclone only transfers what has changed, so re-running
+is cheap and idempotent.
 
 ## Usage
 
@@ -78,6 +78,15 @@ bucketUpload(
 ## Value
 
 Invisibly, rclone's captured output (character).
+
+## Details
+
+When `local` is a single **file**, `rclone copyto` is used so the file
+lands at exactly `remotePath` (treated as the destination object key).
+When `local` is a **directory**, `rclone copy` is used so its contents
+are synced under `remotePath` (treated as a prefix). This avoids the
+classic `rclone copy` footgun where a single file sent to a file-like
+destination is nested as `remotePath/filename`.
 
 ## See also
 
