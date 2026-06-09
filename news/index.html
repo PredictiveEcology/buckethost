@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,10 @@
       <small>Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.3" id="buckethost-003">buckethost 0.0.3<a class="anchor" aria-label="anchor" href="#buckethost-003"></a></h2>
+<ul><li>New <code><a href="../reference/makeMirrorManifest.html">makeMirrorManifest()</a></code>: builds a “remap” <code>data.frame</code> (one row per object: <code>filename</code>, <code>key</code>, <code>url</code>), optionally adds a Google Drive <code>id</code> column matched by file name, and optionally writes the table to CSV. Warns when duplicate file names make the Drive match ambiguous. <code>googledrive</code> moves to Suggests.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.2" id="buckethost-002">buckethost 0.0.2<a class="anchor" aria-label="anchor" href="#buckethost-002"></a></h2>
 <ul><li>Fix <code><a href="../reference/generate_indexes.html">generate_indexes()</a></code> erroring with “subscript out of bounds” when actually uploading (not <code>dry_run</code>): the upload loop indexed pages by name, but the root directory’s name is <code>""</code> and <code>pages[[""]]</code> is an error in R. It now indexes positionally. Added a regression test that exercises the full upload loop, including the root page, with <code>rclone</code> stubbed out.</li>

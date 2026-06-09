@@ -1,5 +1,15 @@
 # Changelog
 
+## buckethost 0.0.3
+
+- New
+  [`makeMirrorManifest()`](https://predictiveecology.github.io/buckethost/reference/makeMirrorManifest.md):
+  builds a “remap” `data.frame` (one row per object: `filename`, `key`,
+  `url`), optionally adds a Google Drive `id` column matched by file
+  name, and optionally writes the table to CSV. Warns when duplicate
+  file names make the Drive match ambiguous. `googledrive` moves to
+  Suggests.
+
 ## buckethost 0.0.2
 
 - Fix

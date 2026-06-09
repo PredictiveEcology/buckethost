@@ -140,6 +140,14 @@ Generate the browsable HTML catalogue and check integrity.
 - [`bucket_verify()`](https://predictiveecology.github.io/buckethost/reference/bucket_verify.md)
   : Verify a local tree against the bucket
 
+## Mirror
+
+Map a bucket’s contents (and optional Google Drive source) to a
+manifest.
+
+- [`makeMirrorManifest()`](https://predictiveecology.github.io/buckethost/reference/makeMirrorManifest.md)
+  : Build a mirror manifest for a bucket
+
 ## Configuration
 
 Resolve connection details from options / environment variables.

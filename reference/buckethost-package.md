@@ -52,6 +52,8 @@ Useful links:
 
 - <https://github.com/PredictiveEcology/buckethost>
 
+- <https://predictiveecology.github.io/buckethost/>
+
 - Report bugs at
   <https://github.com/PredictiveEcology/buckethost/issues>
 
