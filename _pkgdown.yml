@@ -1,0 +1,33 @@
+url: https://predictiveecology.github.io/buckethost/
+
+template:
+  bootstrap: 5
+
+reference:
+- title: Discover
+  desc: >
+    Find what's in a bucket and build the URLs you read from.
+  contents:
+  - bucket_ls
+  - bucket_url
+  - bucket_raster
+- title: Mutate
+  desc: >
+    Upload to and delete from a bucket. Thin, loud wrappers around rclone.
+  contents:
+  - bucket_upload
+  - bucket_delete
+- title: Maintain
+  desc: >
+    Generate the browsable HTML catalogue and check integrity.
+  contents:
+  - generate_indexes
+  - bucket_verify
+- title: Configuration
+  desc: >
+    Resolve connection details from options / environment variables.
+  contents:
+  - bucket_config
+- title: Package
+  contents:
+  - buckethost-package
