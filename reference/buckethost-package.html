@@ -9,7 +9,7 @@ readable data repository. It has three jobs:"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,18 +50,18 @@ readable data repository. It has three jobs:</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
 <dl><dt>Discover</dt>
-<dd><p><code><a href="bucket_ls.html">bucket_ls()</a></code> lists objects via the bucket's public S3
-listing API; <code><a href="bucket_url.html">bucket_url()</a></code> and <code><a href="bucket_raster.html">bucket_raster()</a></code> build the HTTPS /
+<dd><p><code><a href="bucketLs.html">bucketLs()</a></code> lists objects via the bucket's public S3
+listing API; <code><a href="bucketUrl.html">bucketUrl()</a></code> and <code><a href="bucketRaster.html">bucketRaster()</a></code> build the HTTPS /
 <code>/vsicurl/</code> URLs you read from.</p></dd>
 
 <dt>Mutate</dt>
-<dd><p><code><a href="bucket_upload.html">bucket_upload()</a></code> and <code><a href="bucket_delete.html">bucket_delete()</a></code> wrap <code>rclone</code> so
+<dd><p><code><a href="bucketUpload.html">bucketUpload()</a></code> and <code><a href="bucketDelete.html">bucketDelete()</a></code> wrap <code>rclone</code> so
 transfers are robust and failures are loud.</p></dd>
 
 <dt>Maintain</dt>
-<dd><p><code><a href="generate_indexes.html">generate_indexes()</a></code> writes a static <code>index.html</code> for
+<dd><p><code><a href="generateIndexes.html">generateIndexes()</a></code> writes a static <code>index.html</code> for
 every "folder" in the bucket so it can be browsed in a web browser;
-<code><a href="bucket_verify.html">bucket_verify()</a></code> checks a local tree against the remote.</p></dd>
+<code><a href="bucketVerify.html">bucketVerify()</a></code> checks a local tree against the remote.</p></dd>
 
 
 </dl></div>
@@ -80,7 +80,7 @@ everywhere after:</p>
 <span><span class="op">)</span></span></code></pre></div>
 
 <p>The equivalent environment variables are <code>BUCKETHOST_ENDPOINT</code>,
-<code>BUCKETHOST_CONTAINER</code>, and <code>BUCKETHOST_REMOTE</code>. See <a href="bucket_config.html">bucket_config</a>.</p>
+<code>BUCKETHOST_CONTAINER</code>, and <code>BUCKETHOST_REMOTE</code>. See <a href="bucketConfig.html">bucketConfig</a>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

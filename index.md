@@ -13,9 +13,9 @@ It does three things:
 
 | Job | Functions |
 |----|----|
-| **Discover** what’s in a bucket | [`bucket_ls()`](https://predictiveecology.github.io/buckethost/reference/bucket_ls.md), [`bucket_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_url.md), [`bucket_raster()`](https://predictiveecology.github.io/buckethost/reference/bucket_raster.md) |
-| **Mutate** the bucket (loudly) | [`bucket_upload()`](https://predictiveecology.github.io/buckethost/reference/bucket_upload.md), [`bucket_delete()`](https://predictiveecology.github.io/buckethost/reference/bucket_delete.md) |
-| **Maintain** a browsable catalogue + integrity | [`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md), [`bucket_verify()`](https://predictiveecology.github.io/buckethost/reference/bucket_verify.md) |
+| **Discover** what’s in a bucket | [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md), [`bucketUrl()`](https://predictiveecology.github.io/buckethost/reference/bucketUrl.md), [`bucketRaster()`](https://predictiveecology.github.io/buckethost/reference/bucketRaster.md) |
+| **Mutate** the bucket (loudly) | [`bucketUpload()`](https://predictiveecology.github.io/buckethost/reference/bucketUpload.md), [`bucketDelete()`](https://predictiveecology.github.io/buckethost/reference/bucketDelete.md) |
+| **Maintain** a browsable catalogue + integrity | [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md), [`bucketVerify()`](https://predictiveecology.github.io/buckethost/reference/bucketVerify.md) |
 
 ## Installation
 
@@ -50,7 +50,7 @@ options(
 
 library(buckethost)
 
-r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+r <- bucketRaster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 r                          # opens metadata only — no full download
 
 aoi <- terra::vect(my_study_area)
@@ -62,14 +62,14 @@ terra::plot(sub)
 
 ``` r
 
-generate_indexes(
+generateIndexes(
   heading = "PredictiveEcology Temporary Data Repository",
-  disclaimer_html = paste0(
+  disclaimerHtml = paste0(
     "<div class='hero'><p><strong>These data are not produced by the ",
     "PredictiveEcology group</strong> and are only hosted here to ease open ",
     "data access.</p></div>"
   ),
-  host_note = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
+  hostNote = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
 )
 ```
 
@@ -81,9 +81,9 @@ changes.
 The HTML is produced from a template you can override
 (`system.file("templates", "index.html", package = "buckethost")`); pass
 `template = "my-template.html"` to customise it. Tokens:
-`{{page_title}}`, `{{repo_heading}}`, `{{disclaimer_html}}`,
-`{{viewing_heading}}`, `{{breadcrumb}}`, `{{parent_link}}`, `{{rows}}`,
-`{{host_note}}`, `{{timestamp}}`.
+`{{pageTitle}}`, `{{repoHeading}}`, `{{disclaimerHtml}}`,
+`{{viewingHeading}}`, `{{breadcrumb}}`, `{{parentLink}}`, `{{rows}}`,
+`{{hostNote}}`, `{{timestamp}}`.
 
 ## Migrate data into a bucket
 

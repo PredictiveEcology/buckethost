@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,21 +77,21 @@
 <td>
 <strong>Discover</strong> what’s in a bucket</td>
 <td>
-<code><a href="reference/bucket_ls.html">bucket_ls()</a></code>, <code><a href="reference/bucket_url.html">bucket_url()</a></code>, <code><a href="reference/bucket_raster.html">bucket_raster()</a></code>
+<code><a href="reference/bucketLs.html">bucketLs()</a></code>, <code><a href="reference/bucketUrl.html">bucketUrl()</a></code>, <code><a href="reference/bucketRaster.html">bucketRaster()</a></code>
 </td>
 </tr>
 <tr>
 <td>
 <strong>Mutate</strong> the bucket (loudly)</td>
 <td>
-<code><a href="reference/bucket_upload.html">bucket_upload()</a></code>, <code><a href="reference/bucket_delete.html">bucket_delete()</a></code>
+<code><a href="reference/bucketUpload.html">bucketUpload()</a></code>, <code><a href="reference/bucketDelete.html">bucketDelete()</a></code>
 </td>
 </tr>
 <tr>
 <td>
 <strong>Maintain</strong> a browsable catalogue + integrity</td>
 <td>
-<code><a href="reference/generate_indexes.html">generate_indexes()</a></code>, <code><a href="reference/bucket_verify.html">bucket_verify()</a></code>
+<code><a href="reference/generateIndexes.html">generateIndexes()</a></code>, <code><a href="reference/bucketVerify.html">bucketVerify()</a></code>
 </td>
 </tr>
 </tbody>
@@ -121,7 +121,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/PredictiveEcology/buckethost" class="external-link">buckethost</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bucket_raster.html">bucket_raster</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
+<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bucketRaster.html">bucketRaster</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
 <span><span class="va">r</span>                          <span class="co"># opens metadata only — no full download</span></span>
 <span></span>
 <span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">my_study_area</span><span class="op">)</span></span>
@@ -132,17 +132,17 @@
 <h2 id="build-a-browsable-catalogue">Build a browsable catalogue<a class="anchor" aria-label="anchor" href="#build-a-browsable-catalogue"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/generate_indexes.html">generate_indexes</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span></span>
 <span>  heading <span class="op">=</span> <span class="st">"PredictiveEcology Temporary Data Repository"</span>,</span>
-<span>  disclaimer_html <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  disclaimerHtml <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
 <span>    <span class="st">"&lt;div class='hero'&gt;&lt;p&gt;&lt;strong&gt;These data are not produced by the "</span>,</span>
 <span>    <span class="st">"PredictiveEcology group&lt;/strong&gt; and are only hosted here to ease open "</span>,</span>
 <span>    <span class="st">"data access.&lt;/p&gt;&lt;/div&gt;"</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  host_note <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
+<span>  hostNote <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>This writes one <code>index.html</code> per “folder” in the bucket (sortable columns, breadcrumbs, per-page disclaimer) and uploads them. Browse the result at <code>&lt;endpoint&gt;/&lt;container&gt;/index.html</code>. Re-run whenever the data changes.</p>
-<p>The HTML is produced from a template you can override (<code>system.file("templates", "index.html", package = "buckethost")</code>); pass <code>template = "my-template.html"</code> to customise it. Tokens: <code>{{page_title}}</code>, <code>{{repo_heading}}</code>, <code>{{disclaimer_html}}</code>, <code>{{viewing_heading}}</code>, <code>{{breadcrumb}}</code>, <code>{{parent_link}}</code>, <code>{{rows}}</code>, <code>{{host_note}}</code>, <code>{{timestamp}}</code>.</p>
+<p>The HTML is produced from a template you can override (<code>system.file("templates", "index.html", package = "buckethost")</code>); pass <code>template = "my-template.html"</code> to customise it. Tokens: <code>{{pageTitle}}</code>, <code>{{repoHeading}}</code>, <code>{{disclaimerHtml}}</code>, <code>{{viewingHeading}}</code>, <code>{{breadcrumb}}</code>, <code>{{parentLink}}</code>, <code>{{rows}}</code>, <code>{{hostNote}}</code>, <code>{{timestamp}}</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="migrate-data-into-a-bucket">Migrate data into a bucket<a class="anchor" aria-label="anchor" href="#migrate-data-into-a-bucket"></a>

@@ -178,8 +178,8 @@ The equivalent from R, once `buckethost` is configured:
 
 ``` r
 
-bucket_verify("gdrive-or-local/1985", "SCANFI_v2/1985",
-              filter_file = "~/scanfi.filter")$ok
+bucketVerify("gdrive-or-local/1985", "SCANFI_v2/1985",
+              filterFile = "~/scanfi.filter")$ok
 ```
 
 ## Phase 3 — generate the catalogue
@@ -195,9 +195,9 @@ options(
   buckethost.remote    = "arbutus"
 )
 
-generate_indexes(
+generateIndexes(
   heading = "PredictiveEcology Temporary Data Repository",
-  disclaimer_html = paste0(
+  disclaimerHtml = paste0(
     "<div class='hero'>",
     "<p><strong>These data are not produced by the PredictiveEcology group",
     "</strong> and are only hosted here to ease open data access.</p>",
@@ -206,14 +206,14 @@ generate_indexes(
     "07653869-f303-46c2-a04e-9ab479b73cbf' target='_blank' rel='noopener'>",
     "open.canada.ca</a></p></div>"
   ),
-  host_note = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
+  hostNote = "Hosted on the Digital Research Alliance of Canada's Arbutus object storage."
 )
 ```
 
 Browse it at
 `https://object-arbutus.cloud.computecanada.ca/predictiveecology/index.html`.
 Re-run
-[`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md)
+[`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
 any time data is added or changed.
 
 ## Phase 4 — the actual payoff: read it from anywhere
@@ -221,7 +221,7 @@ any time data is added or changed.
 ``` r
 
 library(terra)
-r <- bucket_raster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
+r <- bucketRaster("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
 r                                            # metadata only
 
 b   <- SpaDES.tools::randomStudyArea(size = 1e9, seed = 123)

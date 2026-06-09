@@ -4,13 +4,13 @@
 
 Find what’s in a bucket and build the URLs you read from.
 
-- [`bucket_ls()`](https://predictiveecology.github.io/buckethost/reference/bucket_ls.md)
+- [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
   : List objects in a bucket
 
-- [`bucket_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_url.md)
+- [`bucketUrl()`](https://predictiveecology.github.io/buckethost/reference/bucketUrl.md)
   : Build the public URL for an object
 
-- [`bucket_raster()`](https://predictiveecology.github.io/buckethost/reference/bucket_raster.md)
+- [`bucketRaster()`](https://predictiveecology.github.io/buckethost/reference/bucketRaster.md)
   :
 
   Read a remote raster via GDAL `/vsicurl/`
@@ -19,18 +19,18 @@ Find what’s in a bucket and build the URLs you read from.
 
 Upload to and delete from a bucket. Thin, loud wrappers around rclone.
 
-- [`bucket_upload()`](https://predictiveecology.github.io/buckethost/reference/bucket_upload.md)
+- [`bucketUpload()`](https://predictiveecology.github.io/buckethost/reference/bucketUpload.md)
   : Upload files to a bucket
-- [`bucket_delete()`](https://predictiveecology.github.io/buckethost/reference/bucket_delete.md)
+- [`bucketDelete()`](https://predictiveecology.github.io/buckethost/reference/bucketDelete.md)
   : Delete an object or prefix from a bucket
 
 ## Maintain
 
 Generate the browsable HTML catalogue and check integrity.
 
-- [`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md)
+- [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
   : Generate a browsable HTML catalogue for a bucket
-- [`bucket_verify()`](https://predictiveecology.github.io/buckethost/reference/bucket_verify.md)
+- [`bucketVerify()`](https://predictiveecology.github.io/buckethost/reference/bucketVerify.md)
   : Verify a local tree against the bucket
 
 ## Mirror
@@ -45,11 +45,11 @@ manifest.
 
 Resolve connection details from options / environment variables.
 
-- [`bucket_endpoint()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)
-  [`bucket_container()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)
-  [`bucket_remote()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)
-  [`bucket_base_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)
-  [`bucket_rclone_remote()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)
+- [`bucketEndpoint()`](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md)
+  [`bucketContainer()`](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md)
+  [`bucketRemote()`](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md)
+  [`bucketBaseUrl()`](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md)
+  [`bucketRcloneRemote()`](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md)
   : Connection configuration
 
 ## Package

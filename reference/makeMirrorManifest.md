@@ -23,7 +23,7 @@ makeMirrorManifest(
 - bucket:
 
   Container (bucket) name. When `NULL` (default), resolved via
-  [`bucket_container()`](https://predictiveecology.github.io/buckethost/reference/bucket_config.md).
+  [`bucketContainer()`](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md).
 
 - prefix:
 
@@ -39,7 +39,7 @@ makeMirrorManifest(
 - endpoint:
 
   Optional endpoint override (see
-  [bucket_config](https://predictiveecology.github.io/buckethost/reference/bucket_config.md)).
+  [bucketConfig](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md)).
 
 - file:
 
@@ -62,8 +62,8 @@ disambiguates the rows themselves.
 
 ## See also
 
-[`bucket_ls()`](https://predictiveecology.github.io/buckethost/reference/bucket_ls.md),
-[`bucket_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_url.md)
+[`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md),
+[`bucketUrl()`](https://predictiveecology.github.io/buckethost/reference/bucketUrl.md)
 
 ## Examples
 

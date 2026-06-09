@@ -7,26 +7,26 @@ readable data repository. It has three jobs:
 
 - Discover:
 
-  [`bucket_ls()`](https://predictiveecology.github.io/buckethost/reference/bucket_ls.md)
+  [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
   lists objects via the bucket's public S3 listing API;
-  [`bucket_url()`](https://predictiveecology.github.io/buckethost/reference/bucket_url.md)
+  [`bucketUrl()`](https://predictiveecology.github.io/buckethost/reference/bucketUrl.md)
   and
-  [`bucket_raster()`](https://predictiveecology.github.io/buckethost/reference/bucket_raster.md)
+  [`bucketRaster()`](https://predictiveecology.github.io/buckethost/reference/bucketRaster.md)
   build the HTTPS / `/vsicurl/` URLs you read from.
 
 - Mutate:
 
-  [`bucket_upload()`](https://predictiveecology.github.io/buckethost/reference/bucket_upload.md)
+  [`bucketUpload()`](https://predictiveecology.github.io/buckethost/reference/bucketUpload.md)
   and
-  [`bucket_delete()`](https://predictiveecology.github.io/buckethost/reference/bucket_delete.md)
+  [`bucketDelete()`](https://predictiveecology.github.io/buckethost/reference/bucketDelete.md)
   wrap `rclone` so transfers are robust and failures are loud.
 
 - Maintain:
 
-  [`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md)
+  [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
   writes a static `index.html` for every "folder" in the bucket so it
   can be browsed in a web browser;
-  [`bucket_verify()`](https://predictiveecology.github.io/buckethost/reference/bucket_verify.md)
+  [`bucketVerify()`](https://predictiveecology.github.io/buckethost/reference/bucketVerify.md)
   checks a local tree against the remote.
 
 ## Configuration
@@ -44,7 +44,7 @@ omit them everywhere after:
 
 The equivalent environment variables are `BUCKETHOST_ENDPOINT`,
 `BUCKETHOST_CONTAINER`, and `BUCKETHOST_REMOTE`. See
-[bucket_config](https://predictiveecology.github.io/buckethost/reference/bucket_config.md).
+[bucketConfig](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md).
 
 ## See also
 

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -233,8 +233,8 @@ against the source:</p>
 <p>The equivalent from R, once <code>buckethost</code> is
 configured:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucket_verify.html">bucket_verify</a></span><span class="op">(</span><span class="st">"gdrive-or-local/1985"</span>, <span class="st">"SCANFI_v2/1985"</span>,</span>
-<span>              filter_file <span class="op">=</span> <span class="st">"~/scanfi.filter"</span><span class="op">)</span><span class="op">$</span><span class="va">ok</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketVerify.html">bucketVerify</a></span><span class="op">(</span><span class="st">"gdrive-or-local/1985"</span>, <span class="st">"SCANFI_v2/1985"</span>,</span>
+<span>              filterFile <span class="op">=</span> <span class="st">"~/scanfi.filter"</span><span class="op">)</span><span class="op">$</span><span class="va">ok</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="phase-3-generate-the-catalogue">Phase 3 — generate the catalogue<a class="anchor" aria-label="anchor" href="#phase-3-generate-the-catalogue"></a>
@@ -249,9 +249,9 @@ configured:</p>
 <span>  buckethost.remote    <span class="op">=</span> <span class="st">"arbutus"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/generate_indexes.html">generate_indexes</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span></span>
 <span>  heading <span class="op">=</span> <span class="st">"PredictiveEcology Temporary Data Repository"</span>,</span>
-<span>  disclaimer_html <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  disclaimerHtml <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
 <span>    <span class="st">"&lt;div class='hero'&gt;"</span>,</span>
 <span>    <span class="st">"&lt;p&gt;&lt;strong&gt;These data are not produced by the PredictiveEcology group"</span>,</span>
 <span>    <span class="st">"&lt;/strong&gt; and are only hosted here to ease open data access.&lt;/p&gt;"</span>,</span>
@@ -260,11 +260,11 @@ configured:</p>
 <span>    <span class="st">"07653869-f303-46c2-a04e-9ab479b73cbf' target='_blank' rel='noopener'&gt;"</span>,</span>
 <span>    <span class="st">"open.canada.ca&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;"</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  host_note <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
+<span>  hostNote <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Browse it at
 <code>https://object-arbutus.cloud.computecanada.ca/predictiveecology/index.html</code>.
-Re-run <code><a href="../reference/generate_indexes.html">generate_indexes()</a></code> any time data is added or
+Re-run <code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> any time data is added or
 changed.</p>
 </div>
 <div class="section level2">
@@ -272,7 +272,7 @@ changed.</p>
 </h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
-<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucket_raster.html">bucket_raster</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
+<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucketRaster.html">bucketRaster</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
 <span><span class="va">r</span>                                            <span class="co"># metadata only</span></span>
 <span></span>
 <span><span class="va">b</span>   <span class="op">&lt;-</span> <span class="fu">SpaDES.tools</span><span class="fu">::</span><span class="fu">randomStudyArea</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1e9</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,24 +38,36 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="buckethost-010">buckethost 0.1.0<a class="anchor" aria-label="anchor" href="#buckethost-010"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-0-1-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-1-0"></a></h3>
+<ul><li>All functions and multi-word arguments are now <strong>camelCase</strong>, to match the PredictiveEcology package family. Renames: <code>generate_indexes()</code> -&gt; <code><a href="../reference/generateIndexes.html">generateIndexes()</a></code>, <code>bucket_ls()</code> -&gt; <code><a href="../reference/bucketLs.html">bucketLs()</a></code>, <code>bucket_url()</code> -&gt; <code><a href="../reference/bucketUrl.html">bucketUrl()</a></code>, <code>bucket_raster()</code> -&gt; <code><a href="../reference/bucketRaster.html">bucketRaster()</a></code>, <code>bucket_upload()</code> -&gt; <code><a href="../reference/bucketUpload.html">bucketUpload()</a></code>, <code>bucket_delete()</code> -&gt; <code><a href="../reference/bucketDelete.html">bucketDelete()</a></code>, <code>bucket_verify()</code> -&gt; <code><a href="../reference/bucketVerify.html">bucketVerify()</a></code>, <code>bucket_endpoint()</code> -&gt; <code><a href="../reference/bucketConfig.html">bucketEndpoint()</a></code>, <code>bucket_container()</code> -&gt; <code><a href="../reference/bucketConfig.html">bucketContainer()</a></code>, <code>bucket_remote()</code> -&gt; <code><a href="../reference/bucketConfig.html">bucketRemote()</a></code>, <code>bucket_base_url()</code> -&gt; <code><a href="../reference/bucketConfig.html">bucketBaseUrl()</a></code>, <code>bucket_rclone_remote()</code> -&gt; <code><a href="../reference/bucketConfig.html">bucketRcloneRemote()</a></code>. Arguments likewise (e.g. <code>dry_run</code> -&gt; <code>dryRun</code>, <code>rclone_path</code> -&gt; <code>rclonePath</code>, <code>filter_file</code> -&gt; <code>filterFile</code>, <code>remote_path</code> -&gt; <code>remotePath</code>, <code>disclaimer_html</code> -&gt; <code>disclaimerHtml</code>, <code>host_note</code> -&gt; <code>hostNote</code>, <code>all_files</code> -&gt; <code>allFiles</code>). Options follow: <code>buckethost.disclaimerHtml</code>, <code>buckethost.hostNote</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-1-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-0"></a></h3>
+<ul><li>
+<code><a href="../reference/bucketUpload.html">bucketUpload()</a></code>, <code><a href="../reference/bucketDelete.html">bucketDelete()</a></code>, and <code><a href="../reference/bucketVerify.html">bucketVerify()</a></code> now accept a full public URL as <code>remotePath</code> and normalise it to the object key. Previously passing e.g. <code>"https://endpoint/container/SCANFI_v2/x.csv"</code> uploaded the file to a bogus nested key (the URL embedded under the bucket) instead of <code>"SCANFI_v2/x.csv"</code>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.3" id="buckethost-003">buckethost 0.0.3<a class="anchor" aria-label="anchor" href="#buckethost-003"></a></h2>
 <ul><li>New <code><a href="../reference/makeMirrorManifest.html">makeMirrorManifest()</a></code>: builds a “remap” <code>data.frame</code> (one row per object: <code>filename</code>, <code>key</code>, <code>url</code>), optionally adds a Google Drive <code>id</code> column matched by file name, and optionally writes the table to CSV. Warns when duplicate file names make the Drive match ambiguous. <code>googledrive</code> moves to Suggests.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.2" id="buckethost-002">buckethost 0.0.2<a class="anchor" aria-label="anchor" href="#buckethost-002"></a></h2>
-<ul><li>Fix <code><a href="../reference/generate_indexes.html">generate_indexes()</a></code> erroring with “subscript out of bounds” when actually uploading (not <code>dry_run</code>): the upload loop indexed pages by name, but the root directory’s name is <code>""</code> and <code>pages[[""]]</code> is an error in R. It now indexes positionally. Added a regression test that exercises the full upload loop, including the root page, with <code>rclone</code> stubbed out.</li>
+<ul><li>Fix <code>generate_indexes()</code> erroring with “subscript out of bounds” when actually uploading (not <code>dry_run</code>): the upload loop indexed pages by name, but the root directory’s name is <code>""</code> and <code>pages[[""]]</code> is an error in R. It now indexes positionally. Added a regression test that exercises the full upload loop, including the root page, with <code>rclone</code> stubbed out.</li>
 <li>
-<code><a href="../reference/generate_indexes.html">generate_indexes()</a></code> progress messages now report the correct per-folder dir/file counts (previously lost because <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> stripped the count attributes).</li>
+<code>generate_indexes()</code> progress messages now report the correct per-folder dir/file counts (previously lost because <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply()</a></code> stripped the count attributes).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.1" id="buckethost-001">buckethost 0.0.1<a class="anchor" aria-label="anchor" href="#buckethost-001"></a></h2>
 <ul><li>Initial release.</li>
 <li>
-<code><a href="../reference/generate_indexes.html">generate_indexes()</a></code> writes a browsable, sortable static HTML catalogue (one <code>index.html</code> per folder level) for an S3-compatible bucket and uploads it via <code>rclone</code>. The HTML template is externalised to <code>inst/templates/index.html</code> with <code>{{token}}</code> placeholders, and the page heading, disclaimer/“hero” block, and footer note are all configurable.</li>
-<li>Discovery helpers: <code><a href="../reference/bucket_ls.html">bucket_ls()</a></code>, <code><a href="../reference/bucket_url.html">bucket_url()</a></code>, <code><a href="../reference/bucket_raster.html">bucket_raster()</a></code>.</li>
-<li>Mutation helpers (rclone wrappers that fail loudly): <code><a href="../reference/bucket_upload.html">bucket_upload()</a></code>, <code><a href="../reference/bucket_delete.html">bucket_delete()</a></code>.</li>
-<li>Maintenance: <code><a href="../reference/bucket_verify.html">bucket_verify()</a></code>.</li>
-<li>Connection configuration via options / <code>BUCKETHOST_*</code> environment variables: <code><a href="../reference/bucket_config.html">bucket_endpoint()</a></code>, <code><a href="../reference/bucket_config.html">bucket_container()</a></code>, <code><a href="../reference/bucket_config.html">bucket_remote()</a></code>, <code><a href="../reference/bucket_config.html">bucket_base_url()</a></code>, <code><a href="../reference/bucket_config.html">bucket_rclone_remote()</a></code>.</li>
+<code>generate_indexes()</code> writes a browsable, sortable static HTML catalogue (one <code>index.html</code> per folder level) for an S3-compatible bucket and uploads it via <code>rclone</code>. The HTML template is externalised to <code>inst/templates/index.html</code> with <code>{{token}}</code> placeholders, and the page heading, disclaimer/“hero” block, and footer note are all configurable.</li>
+<li>Discovery helpers: <code>bucket_ls()</code>, <code>bucket_url()</code>, <code>bucket_raster()</code>.</li>
+<li>Mutation helpers (rclone wrappers that fail loudly): <code>bucket_upload()</code>, <code>bucket_delete()</code>.</li>
+<li>Maintenance: <code>bucket_verify()</code>.</li>
+<li>Connection configuration via options / <code>BUCKETHOST_*</code> environment variables: <code>bucket_endpoint()</code>, <code>bucket_container()</code>, <code>bucket_remote()</code>, <code>bucket_base_url()</code>, <code>bucket_rclone_remote()</code>.</li>
 <li>Vignettes: “Getting started” and “Migrating data to an object store (the Arbutus recipe)”.</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

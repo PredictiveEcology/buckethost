@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,40 +93,40 @@ ideally in your <code>.Rprofile</code>:</p>
 <li>
 <strong>remote</strong> — the <em>local</em> name of your
 <code>rclone</code> remote (from <code>rclone config</code>). Only the
-mutating functions (<code><a href="../reference/bucket_upload.html">bucket_upload()</a></code>,
-<code><a href="../reference/bucket_delete.html">bucket_delete()</a></code>, <code><a href="../reference/bucket_verify.html">bucket_verify()</a></code>, and
-uploading indexes) use it.</li>
+mutating functions (<code><a href="../reference/bucketUpload.html">bucketUpload()</a></code>,
+<code><a href="../reference/bucketDelete.html">bucketDelete()</a></code>, <code><a href="../reference/bucketVerify.html">bucketVerify()</a></code>, and uploading
+indexes) use it.</li>
 </ul>
-<p><code><a href="../reference/bucket_config.html">bucket_base_url()</a></code> and
-<code><a href="../reference/bucket_config.html">bucket_rclone_remote()</a></code> show how these combine:</p>
+<p><code><a href="../reference/bucketConfig.html">bucketBaseUrl()</a></code> and <code><a href="../reference/bucketConfig.html">bucketRcloneRemote()</a></code>
+show how these combine:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucket_config.html">bucket_base_url</a></span><span class="op">(</span><span class="op">)</span>        <span class="co">#&gt; "https://object-arbutus.cloud.computecanada.ca/predictiveecology"</span></span>
-<span><span class="fu"><a href="../reference/bucket_config.html">bucket_rclone_remote</a></span><span class="op">(</span><span class="op">)</span>   <span class="co">#&gt; "arbutus:predictiveecology"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketConfig.html">bucketBaseUrl</a></span><span class="op">(</span><span class="op">)</span>        <span class="co">#&gt; "https://object-arbutus.cloud.computecanada.ca/predictiveecology"</span></span>
+<span><span class="fu"><a href="../reference/bucketConfig.html">bucketRcloneRemote</a></span><span class="op">(</span><span class="op">)</span>   <span class="co">#&gt; "arbutus:predictiveecology"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="discover-whats-there">Discover what’s there<a class="anchor" aria-label="anchor" href="#discover-whats-there"></a>
 </h2>
-<p><code><a href="../reference/bucket_ls.html">bucket_ls()</a></code> reads the bucket’s public listing API (no
+<p><code><a href="../reference/bucketLs.html">bucketLs()</a></code> reads the bucket’s public listing API (no
 credentials needed for a public-read bucket) and returns one row per
 object:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">objs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucket_ls.html">bucket_ls</a></span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">"SCANFI_v2/1985"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">objs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucketLs.html">bucketLs</a></span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">"SCANFI_v2/1985"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">objs</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                          key      size                  modified</span></span>
 <span><span class="co">#&gt; 1 SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif 154238911 2026-01-19T...</span></span></code></pre></div>
 <p>Build URLs from keys:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucket_url.html">bucket_url</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketUrl.html">bucketUrl</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; "https://object-arbutus.cloud.computecanada.ca/predictiveecology/SCANFI_v2/1985/..."</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="read-rasters-remotely">Read rasters remotely<a class="anchor" aria-label="anchor" href="#read-rasters-remotely"></a>
 </h2>
-<p><code><a href="../reference/bucket_raster.html">bucket_raster()</a></code> wraps
+<p><code><a href="../reference/bucketRaster.html">bucketRaster()</a></code> wraps
 <code>terra::rast("/vsicurl/&lt;url&gt;")</code>. For a Cloud-Optimized
 GeoTIFF, GDAL fetches only the byte ranges it needs:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucket_raster.html">bucket_raster</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucketRaster.html">bucketRaster</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
 <span><span class="va">r</span>                       <span class="co"># metadata only; nothing downloaded yet</span></span>
 <span></span>
 <span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">my_study_area</span><span class="op">)</span></span>
@@ -140,40 +140,40 @@ GeoTIFF, GDAL fetches only the byte ranges it needs:</p>
 rclone’s own error text. rclone only transfers changes, so re-running is
 cheap.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucket_upload.html">bucket_upload</a></span><span class="op">(</span><span class="st">"~/local/SCANFI/1985"</span>, <span class="st">"SCANFI_v2/1985"</span>,</span>
-<span>              filter_file <span class="op">=</span> <span class="st">"~/scanfi.filter"</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketUpload.html">bucketUpload</a></span><span class="op">(</span><span class="st">"~/local/SCANFI/1985"</span>, <span class="st">"SCANFI_v2/1985"</span>,</span>
+<span>              filterFile <span class="op">=</span> <span class="st">"~/scanfi.filter"</span>,</span>
 <span>              extra <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"--retries"</span>, <span class="st">"10"</span>, <span class="st">"--stats"</span>, <span class="st">"60s"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucket_verify.html">bucket_verify</a></span><span class="op">(</span><span class="st">"~/local/SCANFI/1985"</span>, <span class="st">"SCANFI_v2/1985"</span>,</span>
-<span>                     filter_file <span class="op">=</span> <span class="st">"~/scanfi.filter"</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucketVerify.html">bucketVerify</a></span><span class="op">(</span><span class="st">"~/local/SCANFI/1985"</span>, <span class="st">"SCANFI_v2/1985"</span>,</span>
+<span>                     filterFile <span class="op">=</span> <span class="st">"~/scanfi.filter"</span><span class="op">)</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">ok</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/bucket_delete.html">bucket_delete</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/obsolete.tif"</span><span class="op">)</span>          <span class="co"># prompts to confirm</span></span>
-<span><span class="fu"><a href="../reference/bucket_delete.html">bucket_delete</a></span><span class="op">(</span><span class="st">"SCANFI_v2/old"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span><span class="fu"><a href="../reference/bucketDelete.html">bucketDelete</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/obsolete.tif"</span><span class="op">)</span>          <span class="co"># prompts to confirm</span></span>
+<span><span class="fu"><a href="../reference/bucketDelete.html">bucketDelete</a></span><span class="op">(</span><span class="st">"SCANFI_v2/old"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>              confirm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>                         <span class="co"># whole prefix, no prompt</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="generate-the-browsable-catalogue">Generate the browsable catalogue<a class="anchor" aria-label="anchor" href="#generate-the-browsable-catalogue"></a>
 </h2>
-<p><code><a href="../reference/generate_indexes.html">generate_indexes()</a></code> writes one <code>index.html</code>
-per folder level (sortable columns, breadcrumbs, a per-page disclaimer
+<p><code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> writes one <code>index.html</code> per
+folder level (sortable columns, breadcrumbs, a per-page disclaimer
 block) and uploads them:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/generate_indexes.html">generate_indexes</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span></span>
 <span>  heading <span class="op">=</span> <span class="st">"PredictiveEcology Temporary Data Repository"</span>,</span>
-<span>  disclaimer_html <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
+<span>  disclaimerHtml <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
 <span>    <span class="st">"&lt;div class='hero'&gt;&lt;p&gt;&lt;strong&gt;These data are not produced by the "</span>,</span>
 <span>    <span class="st">"PredictiveEcology group&lt;/strong&gt; and are only hosted here to ease "</span>,</span>
 <span>    <span class="st">"open data access.&lt;/p&gt;&lt;/div&gt;"</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  host_note <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
+<span>  hostNote <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Browse the result at
 <code>&lt;endpoint&gt;/&lt;container&gt;/index.html</code>. Inspect the
-pages without uploading by passing <code>dry_run = TRUE</code>, which
+pages without uploading by passing <code>dryRun = TRUE</code>, which
 returns the HTML:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_indexes.html">generate_indexes</a></span><span class="op">(</span>dry_run <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">pages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span>dryRun <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pages</span><span class="op">[[</span><span class="st">""</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>        <span class="co"># the root index.html</span></span></code></pre></div>
 <p>To customise the look, copy the shipped template and edit it:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -181,7 +181,7 @@ returns the HTML:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"templates"</span>, <span class="st">"index.html"</span>, package <span class="op">=</span> <span class="st">"buckethost"</span><span class="op">)</span>,</span>
 <span>  <span class="st">"my-template.html"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/generate_indexes.html">generate_indexes</a></span><span class="op">(</span>template <span class="op">=</span> <span class="st">"my-template.html"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span>template <span class="op">=</span> <span class="st">"my-template.html"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
