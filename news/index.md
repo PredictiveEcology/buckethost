@@ -1,5 +1,20 @@
 # Changelog
 
+## buckethost 0.0.2
+
+- Fix
+  [`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md)
+  erroring with “subscript out of bounds” when actually uploading (not
+  `dry_run`): the upload loop indexed pages by name, but the root
+  directory’s name is `""` and `pages[[""]]` is an error in R. It now
+  indexes positionally. Added a regression test that exercises the full
+  upload loop, including the root page, with `rclone` stubbed out.
+- [`generate_indexes()`](https://predictiveecology.github.io/buckethost/reference/generate_indexes.md)
+  progress messages now report the correct per-folder dir/file counts
+  (previously lost because
+  [`vapply()`](https://rdrr.io/r/base/lapply.html) stripped the count
+  attributes).
+
 ## buckethost 0.0.1
 
 - Initial release.
