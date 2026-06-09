@@ -1,8 +1,15 @@
 #' Upload files to a bucket
 #'
-#' Thin, loud wrapper around `rclone copy`. Copies `local` (a file or
-#' directory) to `remotePath` within the bucket. rclone only transfers what
-#' has changed, so re-running is cheap and idempotent.
+#' Thin, loud wrapper around `rclone`. Copies `local` to `remotePath` within
+#' the bucket. rclone only transfers what has changed, so re-running is cheap
+#' and idempotent.
+#'
+#' When `local` is a single **file**, `rclone copyto` is used so the file lands
+#' at exactly `remotePath` (treated as the destination object key). When
+#' `local` is a **directory**, `rclone copy` is used so its contents are synced
+#' under `remotePath` (treated as a prefix). This avoids the classic `rclone
+#' copy` footgun where a single file sent to a file-like destination is nested
+#' as `remotePath/filename`.
 #'
 #' @param local Path to a local file or directory to upload.
 #' @param remotePath Destination within the bucket. Either a key/prefix like
@@ -36,10 +43,18 @@ bucketUpload <- function(local, remotePath,
                           extra = character(0),
                           rclonePath = "rclone",
                           dryRun = FALSE, echo = FALSE) {
+  local <- cleanArg(local, "local")
+  remotePath <- cleanArg(remotePath, "remotePath")
+  if (!file.exists(local)) {
+    stop("Local path does not exist: ", local, call. = FALSE)
+  }
   remotePath <- asBucketKey(remotePath, container)
   dest <- sprintf("%s/%s", bucketRcloneRemote(container, remote), remotePath)
+
+  # A single file -> copyto (exact key). A directory -> copy (sync prefix).
+  verb <- if (dir.exists(local)) "copy" else "copyto"
   args <- c(
-    "copy", local, dest,
+    verb, local, dest,
     "--transfers", as.character(transfers),
     if (!is.null(filterFile)) c("--filter-from", filterFile),
     if (dryRun) "--dry-run",
@@ -73,6 +88,7 @@ bucketDelete <- function(remotePath,
                           container = NULL, remote = NULL,
                           recursive = FALSE, confirm = TRUE,
                           rclonePath = "rclone", dryRun = FALSE) {
+  remotePath <- cleanArg(remotePath, "remotePath")
   remotePath <- asBucketKey(remotePath, container)
   dest <- sprintf("%s/%s", bucketRcloneRemote(container, remote), remotePath)
 

@@ -53,9 +53,16 @@ do without transferring. Default \code{FALSE}.}
 Invisibly, rclone's captured output (character).
 }
 \description{
-Thin, loud wrapper around \verb{rclone copy}. Copies \code{local} (a file or
-directory) to \code{remotePath} within the bucket. rclone only transfers what
-has changed, so re-running is cheap and idempotent.
+Thin, loud wrapper around \code{rclone}. Copies \code{local} to \code{remotePath} within
+the bucket. rclone only transfers what has changed, so re-running is cheap
+and idempotent.
+}
+\details{
+When \code{local} is a single \strong{file}, \verb{rclone copyto} is used so the file lands
+at exactly \code{remotePath} (treated as the destination object key). When
+\code{local} is a \strong{directory}, \verb{rclone copy} is used so its contents are synced
+under \code{remotePath} (treated as a prefix). This avoids the classic \verb{rclone copy} footgun where a single file sent to a file-like destination is nested
+as \code{remotePath/filename}.
 }
 \examples{
 \dontrun{

@@ -31,6 +31,8 @@ bucketVerify <- function(localDir, remotePath,
                           filterFile = NULL,
                           rclonePath = "rclone") {
   method <- match.arg(method)
+  localDir <- cleanArg(localDir, "localDir")
+  remotePath <- cleanArg(remotePath, "remotePath")
   remotePath <- asBucketKey(remotePath, container)
   dest <- sprintf("%s/%s", bucketRcloneRemote(container, remote), remotePath)
   args <- c(

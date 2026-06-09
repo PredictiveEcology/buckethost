@@ -1,3 +1,21 @@
+# buckethost 0.2.0
+
+* `makeMirrorManifest()` now matches Google Drive files by **path relative to
+  `driveFolder`** (e.g. `1985/age.tif`), not bare file name. Identical names
+  under different folders (`1985/age.tif` vs `1990/age.tif`) now resolve to
+  distinct Drive ids. Drive paths are reconstructed from each item's parent
+  chain; if a listing lacks parent info the function falls back to file-name
+  matching and warns.
+* `bucketUpload()` now uses `rclone copyto` for a single **file** (so it lands
+  at exactly the destination key) and `rclone copy` for a **directory**.
+  Previously a single file was always sent with `copy`, which nests it as
+  `remotePath/filename` rather than placing it at `remotePath`.
+* `bucketUpload()`, `bucketDelete()`, and `bucketVerify()` now trim surrounding
+  whitespace from path arguments and raise a clear error if a path contains an
+  embedded newline or control character (a stray line break otherwise produces
+  a baffling shell/rclone failure). `bucketUpload()` also checks that `local`
+  exists before invoking rclone.
+
 # buckethost 0.1.0
 
 ## Breaking changes

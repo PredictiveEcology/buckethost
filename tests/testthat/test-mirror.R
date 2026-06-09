@@ -55,15 +55,58 @@ test_that("driveFolder without googledrive installed errors clearly", {
   )
 })
 
-test_that("duplicate basenames warn when matching to Drive", {
+# A Drive listing mirroring the bucket: a SCANFI_v2 root (id "ROOT") with
+# 1985/ and 1990/ folders, age.tif in both plus biomass.tif in 1985.
+mockDriveLs <- function(path, recursive = TRUE, ...) {
+  d <- data.frame(
+    name = c("1985", "1990", "age.tif", "biomass.tif", "age.tif"),
+    id   = c("F1985", "F1990", "A85", "B85", "A90"),
+    stringsAsFactors = FALSE
+  )
+  d$drive_resource <- list(
+    list(parents = "ROOT"),
+    list(parents = "ROOT"),
+    list(parents = "F1985"),
+    list(parents = "F1985"),
+    list(parents = "F1990")
+  )
+  d
+}
+
+test_that("driveRelPaths rebuilds relative paths from the parent chain", {
+  rel <- buckethost:::driveRelPaths(mockDriveLs(), rootId = "ROOT")
+  expect_equal(
+    rel,
+    c("1985", "1990", "1985/age.tif", "1985/biomass.tif", "1990/age.tif")
+  )
+})
+
+test_that("Drive id matches by relative path, keeping duplicate names distinct", {
   skip_if_not(
     requireNamespace("googledrive", quietly = TRUE),
     "googledrive not installed"
   )
   testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
-  # Stub googledrive::drive_ls / as_id so no real Drive call happens.
   testthat::local_mocked_bindings(
-    as_id = function(x) x,
+    as_id = function(x) "ROOT",
+    drive_ls = mockDriveLs,
+    .package = "googledrive"
+  )
+  m <- makeMirrorManifest("predictiveecology", prefix = "SCANFI_v2",
+                          driveFolder = "folder")
+  # mockLs keys: 1985/age.tif, 1990/age.tif, 1985/biomass.tif
+  # The two age.tif rows now resolve to DIFFERENT Drive ids.
+  expect_equal(m$id, c("A85", "A90", "B85"))
+})
+
+test_that("falls back to name matching (with warning) when parents are absent", {
+  skip_if_not(
+    requireNamespace("googledrive", quietly = TRUE),
+    "googledrive not installed"
+  )
+  testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
+  testthat::local_mocked_bindings(
+    as_id = function(x) "ROOT",
     drive_ls = function(path, recursive = TRUE, ...) {
       data.frame(name = c("age.tif", "biomass.tif"),
                  id = c("id_age", "id_bio"), stringsAsFactors = FALSE)
@@ -71,9 +114,9 @@ test_that("duplicate basenames warn when matching to Drive", {
     .package = "googledrive"
   )
   expect_warning(
-    m <- makeMirrorManifest("predictiveecology", driveFolder = "folder"),
-    "more than one prefix"
+    m <- makeMirrorManifest("predictiveecology", prefix = "SCANFI_v2",
+                            driveFolder = "folder"),
+    "falling back to file-name matching"
   )
-  # age.tif appears twice; both rows get the (single) matched id
   expect_equal(m$id[m$filename == "age.tif"], c("id_age", "id_age"))
 })

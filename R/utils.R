@@ -63,6 +63,27 @@ templatePath <- function(template = NULL) {
   system.file("templates", "index.html", package = "buckethost")
 }
 
+# Trim surrounding whitespace from a path argument and reject embedded control
+# characters (newlines, tabs). A stray newline inside a path is almost always
+# an accident (copy/paste, a trailing newline carried into basename()), and if
+# rclone is reached through a shell wrapper such a newline silently splits the
+# command into pieces -- a very confusing failure. Fail early and clearly.
+cleanArg <- function(x, name) {
+  if (length(x) != 1L || !is.character(x)) {
+    stop("`", name, "` must be a single string.", call. = FALSE)
+  }
+  x <- trimws(x)
+  if (grepl("[[:cntrl:]]", x)) {
+    stop(
+      "`", name, "` contains a newline or control character after trimming: ",
+      encodeString(x, quote = "\""),
+      "\n  This usually means a stray line break crept into the path.",
+      call. = FALSE
+    )
+  }
+  x
+}
+
 # Normalise a destination into an object key. A plain key is returned with any
 # leading slashes trimmed. A full public URL (what users often paste, e.g.
 # "https://endpoint/container/SCANFI_v2/x.csv") is stripped down to the key

@@ -19,9 +19,11 @@ makeMirrorManifest(
 \item{prefix}{Optional key prefix to restrict the manifest, e.g.
 \code{"SCANFI_v2/1985"}. Default \code{""} (the whole bucket).}
 
-\item{driveFolder}{Optional Google Drive folder id or URL. When supplied,
-the folder is listed recursively and an \code{id} column is added, matched to
-the bucket objects by file name. Requires the \pkg{googledrive} package.}
+\item{driveFolder}{Optional Google Drive folder id or URL corresponding to
+the bucket's \code{prefix} folder. When supplied, the folder is listed
+recursively and an \code{id} column is added, matched to the bucket objects by
+their \strong{path relative to the folder} (see Details). Requires the
+\pkg{googledrive} package.}
 
 \item{endpoint}{Optional endpoint override (see \link{bucketConfig}).}
 
@@ -41,11 +43,17 @@ source to its mirrored copy on the bucket. Optionally writes the table to a
 CSV.
 }
 \details{
-Matching to Drive is by \strong{file name} (\code{basename(key)}). If the same file
-name appears under more than one folder in the bucket, those rows cannot be
-told apart by name alone and the \code{id} match is ambiguous; a warning is
-issued listing the offending names. The \code{key} column always disambiguates
-the rows themselves.
+Matching to Drive is by \strong{relative path}, not bare file name. The bucket
+object \code{SCANFI_v2/1985/age.tif} (with \code{prefix = "SCANFI_v2"}) is matched to
+the Drive file at \code{1985/age.tif} under \code{driveFolder}. This keeps identical
+file names under different folders (e.g. \code{1985/age.tif} and
+\code{1990/age.tif}) distinct, which a bare-\code{basename()} match cannot do.
+
+Because \code{googledrive::drive_ls(recursive = TRUE)} flattens the tree, the
+relative Drive paths are reconstructed from each item's parent chain. If the
+listing carries no parent information, the function falls back to file-name
+matching and warns. Objects with no Drive file at the matching path get
+\code{NA} and a count is warned.
 }
 \examples{
 \dontrun{
