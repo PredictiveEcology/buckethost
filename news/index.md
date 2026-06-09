@@ -1,5 +1,12 @@
 # Changelog
 
+## buckethost 0.2.1
+
+- [`makeMirrorManifest()`](https://predictiveecology.github.io/buckethost/reference/makeMirrorManifest.md)
+  unmatched-path warning now names the offending object key(s) and notes
+  that bucket objects with no Drive source (a manifest CSV, a generated
+  index) are expected to be unmatched.
+
 ## buckethost 0.2.0
 
 - [`makeMirrorManifest()`](https://predictiveecology.github.io/buckethost/reference/makeMirrorManifest.md)
