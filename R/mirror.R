@@ -142,10 +142,18 @@ makeMirrorManifest <- function(bucket = NULL,
       m$id <- d$id[match(bucketRel, driveRel)]
       nMiss <- sum(is.na(m$id))
       if (nMiss > 0L) {
+        missKeys <- m$key[is.na(m$id)]
+        shown <- paste(utils::head(missKeys, 5L), collapse = ", ")
+        if (nMiss > 5L) shown <- paste0(shown, ", ...")
         warning(
           sprintf(
-            "%d of %d object(s) had no Drive file at the matching relative path.",
-            nMiss, nrow(m)
+            paste0(
+              "%d of %d object(s) had no Drive file at the matching relative ",
+              "path (kept with id = NA): %s. This is expected for bucket ",
+              "objects with no Drive source (e.g. a manifest CSV or ",
+              "generated index)."
+            ),
+            nMiss, nrow(m), shown
           ),
           call. = FALSE
         )

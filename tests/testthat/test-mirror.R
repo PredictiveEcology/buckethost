@@ -99,6 +99,32 @@ test_that("Drive id matches by relative path, keeping duplicate names distinct",
   expect_equal(m$id, c("A85", "A90", "B85"))
 })
 
+test_that("unmatched objects keep id = NA and the warning names them", {
+  skip_if_not(
+    requireNamespace("googledrive", quietly = TRUE),
+    "googledrive not installed"
+  )
+  # Bucket has an extra object (a manifest CSV) with no Drive counterpart.
+  lsWithExtra <- function(prefix = "", container = NULL, endpoint = NULL,
+                          includeIndexes = FALSE) {
+    data.frame(
+      key = c("SCANFI_v2/1985/age.tif", "SCANFI_v2/files.csv"),
+      size = c(1, 2), modified = "x", stringsAsFactors = FALSE
+    )
+  }
+  testthat::local_mocked_bindings(bucketLs = lsWithExtra, bucketUrl = mockUrl)
+  testthat::local_mocked_bindings(
+    as_id = function(x) "ROOT", drive_ls = mockDriveLs, .package = "googledrive"
+  )
+  expect_warning(
+    m <- makeMirrorManifest("predictiveecology", prefix = "SCANFI_v2",
+                            driveFolder = "folder"),
+    "SCANFI_v2/files\\.csv"
+  )
+  expect_true(is.na(m$id[m$key == "SCANFI_v2/files.csv"]))
+  expect_equal(m$id[m$key == "SCANFI_v2/1985/age.tif"], "A85")
+})
+
 test_that("falls back to name matching (with warning) when parents are absent", {
   skip_if_not(
     requireNamespace("googledrive", quietly = TRUE),

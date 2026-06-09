@@ -1,3 +1,9 @@
+# buckethost 0.2.1
+
+* `makeMirrorManifest()` unmatched-path warning now names the offending
+  object key(s) and notes that bucket objects with no Drive source (a manifest
+  CSV, a generated index) are expected to be unmatched.
+
 # buckethost 0.2.0
 
 * `makeMirrorManifest()` now matches Google Drive files by **path relative to
