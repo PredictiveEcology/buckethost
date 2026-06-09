@@ -1,7 +1,7 @@
 Package: buckethost
 Type: Package
 Title: Host and Catalogue Files on S3-Compatible Object Storage
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: c(
     person("Eliot", "McIntire", email = "eliotmcintire@gmail.com",
            role = c("aut", "cre")),

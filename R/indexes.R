@@ -124,20 +124,27 @@ build_page_html <- function(dir, all_files, template, opts) {
 }
 
 # Build the page HTML for every directory level (incl. root "") implied by
-# `all_files`. Returns a named character vector: names are directory paths
-# ("" for root), values are full HTML documents.
+# `all_files`. Returns a list with `html` (a named character vector: names are
+# directory paths, "" for root) plus the per-page `n_dirs` / `n_files` counts.
+# (lapply is used rather than vapply so the per-page count attributes survive
+# to be harvested before the HTML strings are flattened.)
 build_index_pages <- function(all_files, template, opts) {
   all_dirs <- sort(unique(c(
     "",
     unlist(lapply(all_files$key, dirs_for_key))
   )))
-  pages <- vapply(
+  built <- lapply(
     all_dirs,
-    function(d) build_page_html(d, all_files, template, opts),
-    character(1)
+    build_page_html,
+    all_files = all_files, template = template, opts = opts
   )
-  names(pages) <- all_dirs
-  pages
+  html <- vapply(built, as.vector, character(1)) # drop attrs -> clean strings
+  names(html) <- all_dirs
+  list(
+    html = html,
+    n_dirs = vapply(built, function(x) attr(x, "n_dirs"), integer(1)),
+    n_files = vapply(built, function(x) attr(x, "n_files"), integer(1))
+  )
 }
 
 # ---- exported: generate and upload indexes -------------------------------
@@ -239,7 +246,8 @@ generate_indexes <- function(container = NULL,
     timestamp = format(Sys.time(), "%Y-%m-%d %H:%M %Z")
   )
 
-  pages <- build_index_pages(all_files, tmpl, opts)
+  built <- build_index_pages(all_files, tmpl, opts)
+  pages <- built$html
 
   if (dry_run) {
     if (!quiet) message("dry_run = TRUE: built ", length(pages), " pages (not uploaded).")
@@ -247,8 +255,12 @@ generate_indexes <- function(container = NULL,
   }
 
   require_rclone(rclone_path)
-  for (dir in names(pages)) {
-    html <- pages[[dir]]
+  dirs <- names(pages)
+  # Index by position, not name: the root directory's name is "" and
+  # `pages[[""]]` is a subscript-out-of-bounds error in R.
+  for (i in seq_along(pages)) {
+    dir <- dirs[i]
+    html <- pages[[i]]
     tmpfile <- tempfile(fileext = ".html")
     writeLines(html, tmpfile)
     on.exit(unlink(tmpfile), add = TRUE)
@@ -270,7 +282,7 @@ generate_indexes <- function(container = NULL,
     if (res && !quiet) {
       message(sprintf(
         "  Indexed: %s/  (%d dirs, %d files)",
-        dir, attr(html, "n_dirs"), attr(html, "n_files")
+        dir, built$n_dirs[i], built$n_files[i]
       ))
     }
   }

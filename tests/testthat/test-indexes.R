@@ -34,11 +34,16 @@ read_template <- function() {
 }
 
 test_that("build_index_pages emits one page per directory incl. root", {
-  pages <- buckethost:::build_index_pages(fake_files(), read_template(), opts())
+  built <- buckethost:::build_index_pages(fake_files(), read_template(), opts())
   expect_setequal(
-    names(pages),
+    names(built$html),
     c("", "SCANFI_v2", "SCANFI_v2/1985", "SCANFI_v2/1990")
   )
+  # counts line up with pages, and the root has 1 dir (SCANFI_v2) + 1 file
+  expect_length(built$n_dirs, length(built$html))
+  root <- which(names(built$html) == "")
+  expect_equal(built$n_dirs[root], 1L)
+  expect_equal(built$n_files[root], 1L)
 })
 
 test_that("root page lists top-level dir and file, not nested files", {
@@ -76,7 +81,7 @@ test_that("breadcrumb depth and parent links scale with nesting", {
 })
 
 test_that("full page substitutes all template tokens (no leftovers)", {
-  pages <- buckethost:::build_index_pages(fake_files(), read_template(), opts())
+  pages <- buckethost:::build_index_pages(fake_files(), read_template(), opts())$html
   root <- pages[[which(names(pages) == "")]]
   expect_false(grepl("{{", root, fixed = TRUE))
   expect_match(root, "<h1>Test Repo</h1>")
@@ -93,4 +98,26 @@ test_that("dry_run builds pages without needing rclone or network", {
   )
   expect_true(length(pages) >= 4)
   expect_false(any(grepl("{{", pages, fixed = TRUE)))
+})
+
+test_that("the upload loop handles the root (\"\") page without subscript error", {
+  # Regression: generate_indexes() indexed pages by name, but the root page's
+  # name is "" and pages[[\"\"]] is a subscript-out-of-bounds error. Exercise
+  # the real (non-dry-run) upload loop with `true` standing in for rclone so
+  # every copyto "succeeds" without touching the network.
+  skip_if_not(nzchar(Sys.which("true")), "no `true` executable to stand in for rclone")
+
+  expect_no_error(
+    pages <- generate_indexes(
+      all_files = fake_files(),
+      heading = "Test Repo",
+      rclone_path = "true",
+      quiet = TRUE
+    )
+  )
+  # root "" plus the three real directories were all processed
+  expect_setequal(
+    names(pages),
+    c("", "SCANFI_v2", "SCANFI_v2/1985", "SCANFI_v2/1990")
+  )
 })
