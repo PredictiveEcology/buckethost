@@ -52,7 +52,11 @@ Two URL/identifier conventions are at play and are easy to confuse:
 \item{\code{endpoint}}{The object store's HTTPS host, e.g.
 \code{"https://object-arbutus.cloud.computecanada.ca"}. No bucket name.}
 \item{\code{container}}{The bucket (a.k.a. container) name, e.g.
-\code{"predictiveecology"}.}
+\code{"predictiveecology"}. Where public URLs need a project id in front of
+the bucket, as on the new Arbutus
+(\verb{https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/...}),
+give it as \code{"<project-id>:<bucket>"}; \code{\link[=bucketRcloneRemote]{bucketRcloneRemote()}} drops the
+prefix, because rclone wants the bare bucket name.}
 \item{\code{remote}}{The name of the \code{rclone} remote you configured with
 \verb{rclone config}, e.g. \code{"arbutus"}. This is local to your machine and is
 unrelated to the public URL.}

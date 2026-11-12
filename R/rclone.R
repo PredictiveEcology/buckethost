@@ -33,7 +33,9 @@ rclone <- function(args, path = "rclone", error = TRUE, echo = FALSE) {
     message("+ ", path, " ", paste(args, collapse = " "))
   }
   out <- suppressWarnings(
-    system2(path, args = args, stdout = TRUE, stderr = TRUE)
+    # system2() hands args to the shell unquoted: quote them, or a path with a
+    # space ("SCANFI v2") or a tab separator splits into several arguments.
+    system2(path, args = shQuote(args), stdout = TRUE, stderr = TRUE)
   )
   status <- attr(out, "status")
   if (!is.null(status) && status != 0L && error) {

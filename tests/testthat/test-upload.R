@@ -51,3 +51,13 @@ test_that("bucketUpload normalises a full URL and errors on a missing local", {
     "Local path does not exist"
   )
 })
+
+test_that("rclone() passes an argument containing a space as one argument", {
+  skip_on_os("windows")
+  log <- tempfile()
+  stub <- tempfile(fileext = ".sh")
+  writeLines(c("#!/bin/sh", sprintf("printf '%%s\\n' \"$#\" \"$2\" > '%s'", log)), stub)
+  Sys.chmod(stub, "0755")
+  buckethost:::rclone(c("check", "gdrive:SCANFI v2/1985", "r:c/x"), path = stub)
+  expect_equal(readLines(log), c("3", "gdrive:SCANFI v2/1985"))
+})

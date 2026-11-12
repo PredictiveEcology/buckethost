@@ -234,7 +234,8 @@ generateIndexes <- function(container = NULL,
   tmpl <- paste(readLines(templatePath(template), warn = FALSE), collapse = "\n")
 
   if (is.null(allFiles)) {
-    allFiles <- bucketLs(container = container, endpoint = endpoint)
+    allFiles <- bucketLs(container = container, endpoint = endpoint,
+                         remote = remote, rclonePath = rclonePath)
   }
   if (!quiet) message(sprintf("Indexing %d objects...", nrow(allFiles)))
 

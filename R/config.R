@@ -12,7 +12,11 @@
 #'   \item{`endpoint`}{The object store's HTTPS host, e.g.
 #'     `"https://object-arbutus.cloud.computecanada.ca"`. No bucket name.}
 #'   \item{`container`}{The bucket (a.k.a. container) name, e.g.
-#'     `"predictiveecology"`.}
+#'     `"predictiveecology"`. Where public URLs need a project id in front of
+#'     the bucket, as on the new Arbutus
+#'     (`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/...`),
+#'     give it as `"<project-id>:<bucket>"`; [bucketRcloneRemote()] drops the
+#'     prefix, because rclone wants the bare bucket name.}
 #'   \item{`remote`}{The name of the `rclone` remote you configured with
 #'     `rclone config`, e.g. `"arbutus"`. This is local to your machine and is
 #'     unrelated to the public URL.}
@@ -91,5 +95,7 @@ bucketBaseUrl <- function(container = NULL, endpoint = NULL) {
 #' @examples
 #' bucketRcloneRemote(remote = "arbutus", container = "mydata")
 bucketRcloneRemote <- function(container = NULL, remote = NULL) {
-  paste0(bucketRemote(remote), ":", bucketContainer(container))
+  # rclone names the bucket without the "<project-id>:" prefix that public URLs
+  # on some stores (the new Arbutus) need, so drop it here.
+  paste0(bucketRemote(remote), ":", sub("^[^:/]+:", "", bucketContainer(container)))
 }

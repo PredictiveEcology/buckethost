@@ -49,11 +49,11 @@ options(
 still points at it, so set `buckethost.endpoint` as above. On the new
 endpoint, public URLs include the project id:
 `https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`. To read
-anonymously, set `buckethost.container = "<project-id>:predictiveecology"`.
-Use the bare bucket name for `bucketUpload()`, `bucketDelete()` and
-`bucketVerify()`, because rclone wants it without the prefix. The
-`predictiveecology` bucket allows public reads but not public listing, so
-`bucketLs()` and `generateIndexes()` don't work against it anonymously.
+anonymously, set `buckethost.container = "<project-id>:predictiveecology"`;
+the rclone-based functions drop the prefix themselves. The `predictiveecology`
+bucket allows public reads but not public listing, so `bucketLs()` (and with
+it `generateIndexes()` and `makeMirrorManifest()`) lists through your rclone
+remote instead, which needs write access set up.
 
 ## Read remote rasters without downloading
 

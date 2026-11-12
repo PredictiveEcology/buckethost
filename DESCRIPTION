@@ -1,7 +1,7 @@
 Package: buckethost
 Type: Package
 Title: Host and Catalogue Files on S3-Compatible Object Storage
-Version: 0.2.1
+Version: 0.3.0
 Authors@R: c(
     person("Eliot", "McIntire", email = "eliotmcintire@gmail.com",
            role = c("aut", "cre")),
@@ -35,4 +35,4 @@ VignetteBuilder: knitr
 URL: https://github.com/PredictiveEcology/buckethost,
     https://predictiveecology.github.io/buckethost/
 BugReports: https://github.com/PredictiveEcology/buckethost/issues
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

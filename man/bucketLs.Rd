@@ -8,7 +8,9 @@ bucketLs(
   prefix = "",
   container = NULL,
   endpoint = NULL,
-  includeIndexes = FALSE
+  includeIndexes = FALSE,
+  remote = NULL,
+  rclonePath = "rclone"
 )
 }
 \arguments{
@@ -25,15 +27,25 @@ then a built-in default.}
 
 \item{includeIndexes}{If \code{FALSE} (default), generated \code{index.html} files
 are dropped from the result so you see only data objects.}
+
+\item{remote}{The name of your local \code{rclone} remote. When \code{NULL}, resolved
+from \code{options(buckethost.remote=)}, then \code{BUCKETHOST_REMOTE}, then a
+built-in default.}
+
+\item{rclonePath}{Path to the \code{rclone} executable, used only when anonymous
+listing is refused. Default \code{"rclone"}.}
 }
 \value{
 A \code{data.frame} with columns \code{key}, \code{size} (bytes), and \code{modified}
-(ISO-8601 string), sorted by key.
+(a time string: ISO-8601 from the public listing, \code{"YYYY-MM-DD HH:MM:SS"}
+from rclone), sorted by key.
 }
 \description{
 Reads the bucket's public S3 listing API and returns one row per object.
-Pagination (1000 keys per response) is handled for you. The bucket must be
-configured for public/anonymous read.
+Pagination (1000 keys per response) is handled for you. If the bucket
+refuses anonymous listing (HTTP 403), as the PredictiveEcology bucket on the
+new Arbutus does, it lists with \code{rclone} instead, using the credentials of
+your rclone \code{remote}.
 }
 \examples{
 \dontrun{
