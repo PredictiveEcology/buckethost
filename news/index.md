@@ -1,5 +1,34 @@
 # Changelog
 
+## buckethost 0.3.0
+
+- [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
+  falls back to listing with `rclone` (your configured remote) when the
+  bucket refuses anonymous listing, as the PredictiveEcology bucket on
+  the new Arbutus does.
+  [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
+  and
+  [`makeMirrorManifest()`](https://predictiveecology.github.io/buckethost/reference/makeMirrorManifest.md)
+  list through it, so both work against that bucket again.
+- `container` may be given as `"<project-id>:<bucket>"`, the form public
+  URLs need on the new Arbutus.
+  [`bucketRcloneRemote()`](https://predictiveecology.github.io/buckethost/reference/bucketConfig.md)
+  drops the prefix, so one `container` setting serves reads, uploads and
+  listing.
+- rclone arguments are now shell-quoted, so a path with a space (e.g. a
+  Drive folder `"SCANFI v2"`) is passed as one argument instead of being
+  split.
+- `makeMirrorManifest(directories = TRUE)` appends one *directory remap*
+  row per Google Drive folder: its `url` is the bucket’s S3
+  prefix-listing URL (`<base>/?prefix=<key>/&delimiter=/`) and a new
+  `type` column distinguishes `"dir"` from `"file"` rows. This lets a
+  consumer (e.g. `reproducible`) enumerate a Drive folder’s contents
+  from the public bucket listing instead of
+  [`googledrive::drive_ls()`](https://googledrive.tidyverse.org/reference/drive_ls.html),
+  so listing a folder needs no Google authentication. Default is `FALSE`
+  (file-only manifest, unchanged schema). Requires `driveFolder` (folder
+  ids come from the Drive listing).
+
 ## buckethost 0.2.1
 
 - [`makeMirrorManifest()`](https://predictiveecology.github.io/buckethost/reference/makeMirrorManifest.md)

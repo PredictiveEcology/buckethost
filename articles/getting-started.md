@@ -28,18 +28,17 @@ default still points at it, so set `buckethost.endpoint` as above. On
 the new endpoint, public URLs include the project id:
 `https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`. To
 read anonymously, set
-`buckethost.container = "<project-id>:predictiveecology"`. Use the bare
-bucket name for
-[`bucketUpload()`](https://predictiveecology.github.io/buckethost/reference/bucketUpload.md),
-[`bucketDelete()`](https://predictiveecology.github.io/buckethost/reference/bucketDelete.md)
-and
-[`bucketVerify()`](https://predictiveecology.github.io/buckethost/reference/bucketVerify.md),
-because rclone wants it without the prefix. The `predictiveecology`
-bucket allows public reads but not public listing, so
+`buckethost.container = "<project-id>:predictiveecology"`; the
+rclone-based functions drop the prefix themselves. The
+`predictiveecology` bucket allows public reads but not public listing,
+so
 [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
-and
+(and with it
 [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
-don’t work against it anonymously.
+and
+[`makeMirrorManifest()`](https://predictiveecology.github.io/buckethost/reference/makeMirrorManifest.md))
+lists through your rclone remote instead, which needs write access set
+up.
 
 Three identifiers, easily confused:
 
@@ -67,7 +66,8 @@ bucketRcloneRemote()   #> "arbutus:predictiveecology"
 
 [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
 reads the bucket’s public listing API (no credentials needed for a
-public-read bucket) and returns one row per object:
+public-read bucket) and returns one row per object. If the bucket
+refuses anonymous listing, it lists with your rclone remote instead:
 
 ``` r
 

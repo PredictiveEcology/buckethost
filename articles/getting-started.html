@@ -19,7 +19,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,13 +91,13 @@ package default still points at it, so set
 URLs include the project id:
 <code>https://object-arbutus.alliancecan.ca/&lt;project-id&gt;:&lt;bucket&gt;/&lt;key&gt;</code>.
 To read anonymously, set
-<code>buckethost.container = "&lt;project-id&gt;:predictiveecology"</code>.
-Use the bare bucket name for <code><a href="../reference/bucketUpload.html">bucketUpload()</a></code>,
-<code><a href="../reference/bucketDelete.html">bucketDelete()</a></code> and <code><a href="../reference/bucketVerify.html">bucketVerify()</a></code>, because
-rclone wants it without the prefix. The <code>predictiveecology</code>
-bucket allows public reads but not public listing, so
-<code><a href="../reference/bucketLs.html">bucketLs()</a></code> and <code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> don’t work
-against it anonymously.</p>
+<code>buckethost.container = "&lt;project-id&gt;:predictiveecology"</code>;
+the rclone-based functions drop the prefix themselves. The
+<code>predictiveecology</code> bucket allows public reads but not public
+listing, so <code><a href="../reference/bucketLs.html">bucketLs()</a></code> (and with it
+<code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> and <code><a href="../reference/makeMirrorManifest.html">makeMirrorManifest()</a></code>)
+lists through your rclone remote instead, which needs write access set
+up.</p>
 <p>Three identifiers, easily confused:</p>
 <ul>
 <li>
@@ -122,7 +122,8 @@ show how these combine:</p>
 </h2>
 <p><code><a href="../reference/bucketLs.html">bucketLs()</a></code> reads the bucket’s public listing API (no
 credentials needed for a public-read bucket) and returns one row per
-object:</p>
+object. If the bucket refuses anonymous listing, it lists with your
+rclone remote instead:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">objs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bucketLs.html">bucketLs</a></span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">"SCANFI_v2/1985"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">objs</span><span class="op">)</span></span>

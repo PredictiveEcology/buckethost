@@ -15,7 +15,7 @@ CSV."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,8 @@ CSV.</p>
 <span>  prefix <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  driveFolder <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  endpoint <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  file <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  directories <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -95,16 +96,31 @@ their <strong>path relative to the folder</strong> (see Details). Requires the
 <dd><p>Optional path to write the manifest to as CSV. When <code>NULL</code>
 (default) no file is written.</p></dd>
 
+
+<dt id="arg-directories">directories<a class="anchor" aria-label="anchor" href="#arg-directories"></a></dt>
+<dd><p>Logical. When <code>TRUE</code>, append one <em>directory remap</em> row per
+Google Drive folder (mapping its folder id to the bucket's prefix-listing
+URL) and add a <code>type</code> column (<code>"file"</code>/<code>"dir"</code>). Requires <code>driveFolder</code>.
+Default <code>FALSE</code> (file rows only, unchanged schema).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>data.frame</code> with columns <code>filename</code>, <code>key</code>, <code>url</code>, and (when
-<code>driveFolder</code> is given) <code>id</code>. Returned invisibly when <code>file</code> is written,
+<code>driveFolder</code> is given) <code>id</code>; plus a <code>type</code> column and appended directory
+rows when <code>directories = TRUE</code>. Returned invisibly when <code>file</code> is written,
 visibly otherwise.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Matching to Drive is by <strong>relative path</strong>, not bare file name. The bucket
+    <p>With <code>directories = TRUE</code> the manifest also gains one row per Google Drive
+<strong>folder</strong> (a <em>directory remap</em>): its <code>url</code> is the bucket's S3 prefix-listing
+URL for the matching folder (<code>&lt;base&gt;/?prefix=&lt;key&gt;/&amp;delimiter=/</code>), and a
+<code>type</code> column distinguishes <code>"dir"</code> rows from <code>"file"</code> rows. A consumer
+(e.g. <code>reproducible</code>) can then enumerate a Drive folder's contents from the
+public bucket listing instead of <code><a href="https://googledrive.tidyverse.org/reference/drive_ls.html" class="external-link">googledrive::drive_ls()</a></code>, so listing a
+folder needs no Google authentication.</p>
+<p>Matching to Drive is by <strong>relative path</strong>, not bare file name. The bucket
 object <code>SCANFI_v2/1985/age.tif</code> (with <code>prefix = "SCANFI_v2"</code>) is matched to
 the Drive file at <code>1985/age.tif</code> under <code>driveFolder</code>. This keeps identical
 file names under different folders (e.g. <code>1985/age.tif</code> and

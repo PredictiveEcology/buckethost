@@ -1,8 +1,10 @@
 # List objects in a bucket
 
 Reads the bucket's public S3 listing API and returns one row per object.
-Pagination (1000 keys per response) is handled for you. The bucket must
-be configured for public/anonymous read.
+Pagination (1000 keys per response) is handled for you. If the bucket
+refuses anonymous listing (HTTP 403), as the PredictiveEcology bucket on
+the new Arbutus does, it lists with `rclone` instead, using the
+credentials of your rclone `remote`.
 
 ## Usage
 
@@ -11,7 +13,9 @@ bucketLs(
   prefix = "",
   container = NULL,
   endpoint = NULL,
-  includeIndexes = FALSE
+  includeIndexes = FALSE,
+  remote = NULL,
+  rclonePath = "rclone"
 )
 ```
 
@@ -39,10 +43,22 @@ bucketLs(
   If `FALSE` (default), generated `index.html` files are dropped from
   the result so you see only data objects.
 
+- remote:
+
+  The name of your local `rclone` remote. When `NULL`, resolved from
+  `options(buckethost.remote=)`, then `BUCKETHOST_REMOTE`, then a
+  built-in default.
+
+- rclonePath:
+
+  Path to the `rclone` executable, used only when anonymous listing is
+  refused. Default `"rclone"`.
+
 ## Value
 
-A `data.frame` with columns `key`, `size` (bytes), and `modified`
-(ISO-8601 string), sorted by key.
+A `data.frame` with columns `key`, `size` (bytes), and `modified` (a
+time string: ISO-8601 from the public listing, `"YYYY-MM-DD HH:MM:SS"`
+from rclone), sorted by key.
 
 ## See also
 

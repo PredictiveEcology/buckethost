@@ -59,7 +59,12 @@ Two URL/identifier conventions are at play and are easy to confuse:
 
 - `container`:
 
-  The bucket (a.k.a. container) name, e.g. `"predictiveecology"`.
+  The bucket (a.k.a. container) name, e.g. `"predictiveecology"`. Where
+  public URLs need a project id in front of the bucket, as on the new
+  Arbutus
+  (`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/...`),
+  give it as `"<project-id>:<bucket>"`; `bucketRcloneRemote()` drops the
+  prefix, because rclone wants the bare bucket name.
 
 - `remote`:
 

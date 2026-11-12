@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,16 @@
       <small>Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="buckethost-030">buckethost 0.3.0<a class="anchor" aria-label="anchor" href="#buckethost-030"></a></h2>
+<ul><li>
+<code><a href="../reference/bucketLs.html">bucketLs()</a></code> falls back to listing with <code>rclone</code> (your configured remote) when the bucket refuses anonymous listing, as the PredictiveEcology bucket on the new Arbutus does. <code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> and <code><a href="../reference/makeMirrorManifest.html">makeMirrorManifest()</a></code> list through it, so both work against that bucket again.</li>
+<li>
+<code>container</code> may be given as <code>"&lt;project-id&gt;:&lt;bucket&gt;"</code>, the form public URLs need on the new Arbutus. <code><a href="../reference/bucketConfig.html">bucketRcloneRemote()</a></code> drops the prefix, so one <code>container</code> setting serves reads, uploads and listing.</li>
+<li>rclone arguments are now shell-quoted, so a path with a space (e.g. a Drive folder <code>"SCANFI v2"</code>) is passed as one argument instead of being split.</li>
+<li>
+<code>makeMirrorManifest(directories = TRUE)</code> appends one <em>directory remap</em> row per Google Drive folder: its <code>url</code> is the bucket’s S3 prefix-listing URL (<code>&lt;base&gt;/?prefix=&lt;key&gt;/&amp;delimiter=/</code>) and a new <code>type</code> column distinguishes <code>"dir"</code> from <code>"file"</code> rows. This lets a consumer (e.g. <code>reproducible</code>) enumerate a Drive folder’s contents from the public bucket listing instead of <code><a href="https://googledrive.tidyverse.org/reference/drive_ls.html" class="external-link">googledrive::drive_ls()</a></code>, so listing a folder needs no Google authentication. Default is <code>FALSE</code> (file-only manifest, unchanged schema). Requires <code>driveFolder</code> (folder ids come from the Drive listing).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="buckethost-021">buckethost 0.2.1<a class="anchor" aria-label="anchor" href="#buckethost-021"></a></h2>
 <ul><li>

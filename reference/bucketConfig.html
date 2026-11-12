@@ -13,7 +13,7 @@ them up."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,7 +101,11 @@ built-in default.</p></dd>
 
 <dt><code>container</code></dt>
 <dd><p>The bucket (a.k.a. container) name, e.g.
-<code>"predictiveecology"</code>.</p></dd>
+<code>"predictiveecology"</code>. Where public URLs need a project id in front of
+the bucket, as on the new Arbutus
+(<code>https://object-arbutus.alliancecan.ca/&lt;project-id&gt;:&lt;bucket&gt;/...</code>),
+give it as <code>"&lt;project-id&gt;:&lt;bucket&gt;"</code>; <code>bucketRcloneRemote()</code> drops the
+prefix, because rclone wants the bare bucket name.</p></dd>
 
 <dt><code>remote</code></dt>
 <dd><p>The name of the <code>rclone</code> remote you configured with

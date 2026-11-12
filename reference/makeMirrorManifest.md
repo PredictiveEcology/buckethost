@@ -14,7 +14,8 @@ makeMirrorManifest(
   prefix = "",
   driveFolder = NULL,
   endpoint = NULL,
-  file = NULL
+  file = NULL,
+  directories = FALSE
 )
 ```
 
@@ -48,13 +49,31 @@ makeMirrorManifest(
   Optional path to write the manifest to as CSV. When `NULL` (default)
   no file is written.
 
+- directories:
+
+  Logical. When `TRUE`, append one *directory remap* row per Google
+  Drive folder (mapping its folder id to the bucket's prefix-listing
+  URL) and add a `type` column (`"file"`/`"dir"`). Requires
+  `driveFolder`. Default `FALSE` (file rows only, unchanged schema).
+
 ## Value
 
 A `data.frame` with columns `filename`, `key`, `url`, and (when
-`driveFolder` is given) `id`. Returned invisibly when `file` is written,
-visibly otherwise.
+`driveFolder` is given) `id`; plus a `type` column and appended
+directory rows when `directories = TRUE`. Returned invisibly when `file`
+is written, visibly otherwise.
 
 ## Details
+
+With `directories = TRUE` the manifest also gains one row per Google
+Drive **folder** (a *directory remap*): its `url` is the bucket's S3
+prefix-listing URL for the matching folder
+(`<base>/?prefix=<key>/&delimiter=/`), and a `type` column distinguishes
+`"dir"` rows from `"file"` rows. A consumer (e.g. `reproducible`) can
+then enumerate a Drive folder's contents from the public bucket listing
+instead of
+[`googledrive::drive_ls()`](https://googledrive.tidyverse.org/reference/drive_ls.html),
+so listing a folder needs no Google authentication.
 
 Matching to Drive is by **relative path**, not bare file name. The
 bucket object `SCANFI_v2/1985/age.tif` (with `prefix = "SCANFI_v2"`) is
