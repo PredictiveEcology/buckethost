@@ -1,8 +1,9 @@
 # Getting started with buckethost
 
 `buckethost` turns any S3-compatible bucket into a browsable, remotely
-readable data repository. This vignette covers day-to-day use; for the
-full “how do I get data into a bucket in the first place” recipe see
+readable data repository. This vignette covers day-to-day use, including
+uploading local files. For moving a large dataset from Google Drive, and
+for requesting an Arbutus allocation, see
 [`vignette("migration-workflow")`](https://predictiveecology.github.io/buckethost/articles/migration-workflow.md).
 
 ## Configure once
@@ -15,11 +16,30 @@ environment variables). Set them once — ideally in your `.Rprofile`:
 library(buckethost)
 
 options(
-  buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
+  buckethost.endpoint  = "https://object-arbutus.alliancecan.ca",
   buckethost.container = "predictiveecology",
   buckethost.remote    = "arbutus"   # name of the rclone remote
 )
 ```
+
+**Arbutus moved in 2026.** The old endpoint,
+`object-arbutus.cloud.computecanada.ca`, is retired and the package
+default still points at it, so set `buckethost.endpoint` as above. On
+the new endpoint, public URLs include the project id:
+`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`. To
+read anonymously, set
+`buckethost.container = "<project-id>:predictiveecology"`. Use the bare
+bucket name for
+[`bucketUpload()`](https://predictiveecology.github.io/buckethost/reference/bucketUpload.md),
+[`bucketDelete()`](https://predictiveecology.github.io/buckethost/reference/bucketDelete.md)
+and
+[`bucketVerify()`](https://predictiveecology.github.io/buckethost/reference/bucketVerify.md),
+because rclone wants it without the prefix. The `predictiveecology`
+bucket allows public reads but not public listing, so
+[`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
+and
+[`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
+don’t work against it anonymously.
 
 Three identifiers, easily confused:
 
@@ -39,7 +59,7 @@ show how these combine:
 
 ``` r
 
-bucketBaseUrl()        #> "https://object-arbutus.cloud.computecanada.ca/predictiveecology"
+bucketBaseUrl()        #> "https://object-arbutus.alliancecan.ca/predictiveecology"
 bucketRcloneRemote()   #> "arbutus:predictiveecology"
 ```
 
@@ -62,7 +82,7 @@ Build URLs from keys:
 ``` r
 
 bucketUrl("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
-#> "https://object-arbutus.cloud.computecanada.ca/predictiveecology/SCANFI_v2/1985/..."
+#> "https://object-arbutus.alliancecan.ca/predictiveecology/SCANFI_v2/1985/..."
 ```
 
 ## Read rasters remotely
@@ -80,6 +100,57 @@ aoi <- terra::vect(my_study_area)
 sub <- terra::crop(r, terra::project(aoi, terra::crs(r)))   # a few hundred KB
 terra::plot(sub)
 ```
+
+## Set up write access (once)
+
+Reading needs nothing. Uploading, deleting and verifying need S3
+credentials and an `rclone` remote. You must be a member of the Arbutus
+project that owns the bucket.
+
+**EC2 (S3-compatible) credentials.** The OpenStack *Application
+Credentials* in the dashboard are **not** what you want — those use
+Swift-native auth, not S3. The Horizon dashboard removed the direct “EC2
+Credentials” button, so use the CLI:
+
+``` bash
+pipx install python-openstackclient        # or pip install --user on Windows
+source ~/Downloads/<project>-openrc.sh
+openstack ec2 credentials create
+```
+
+This needs port 5000 (Keystone), which is **blocked on many government
+networks**. Workaround: run it once from a home network or cellular
+hotspot. The resulting EC2 access key + secret are portable — once
+created they work from anywhere over port 443. Save them to a password
+manager.
+
+**The `arbutus` rclone remote.** `rclone config` → `n` (new) → name
+`arbutus` → storage `s3` → provider `Other` → `env_auth` false → paste
+your EC2 access key / secret → region blank → endpoint
+`https://object-arbutus.alliancecan.ca` → location_constraint blank →
+acl `private` → **Edit advanced config: yes**, and set the one critical
+option:
+
+    force_path_style = true
+
+Arbutus’s Swift S3 gateway doesn’t support virtual-hosted-style URLs
+(`bucket.endpoint.com`). Without `force_path_style = true`, every
+request fails with signature or DNS errors. Accept defaults for
+everything else. The resulting `~/.config/rclone/rclone.conf` should
+contain:
+
+``` ini
+[arbutus]
+type = s3
+provider = Other
+access_key_id = <key>
+secret_access_key = <secret>
+endpoint = https://object-arbutus.alliancecan.ca
+acl = private
+force_path_style = true
+```
+
+Test: `rclone lsd arbutus:` should list your container(s) with no error.
 
 ## Mutate the bucket
 

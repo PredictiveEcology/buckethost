@@ -11,6 +11,19 @@ problem will want the exact flags and gotchas, not a sanitised summary.
 Most of it is dashboard / shell work done once; the R parts are at the
 end.
 
+**Arbutus moved in 2026.** This recipe was written for the legacy
+Arbutus cloud (`object-arbutus.cloud.computecanada.ca`), which is now
+retired. The endpoints below are updated to the new one,
+`object-arbutus.alliancecan.ca`. Phase 0 has not been re-checked on the
+new cloud. Three things differ there:
+
+- public URLs include the project id:
+  `https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`;
+- `rclone copy` does not copy access settings, so a copied bucket starts
+  private and must be made public again;
+- the `predictiveecology` bucket allows public reads but not public
+  listing.
+
 ## Why object storage over Google Drive?
 
 - Google Drive doesn’t support HTTP range requests reliably, so partial
@@ -47,22 +60,9 @@ Justify: hosting COG outputs for collaborator access via `/vsicurl/`;
 HPC clusters don’t fit (they’re for compute, not public HTTPS serving);
 include a maintenance plan. Turnaround is typically a week or two.
 
-**C. EC2 (S3-compatible) credentials.** The OpenStack *Application
-Credentials* in the dashboard are **not** what you want — those use
-Swift-native auth, not S3. The Horizon dashboard removed the direct “EC2
-Credentials” button, so use the CLI:
-
-``` bash
-pipx install python-openstackclient        # or pip install --user on Windows
-source ~/Downloads/<project>-openrc.sh
-openstack ec2 credentials create
-```
-
-This needs port 5000 (Keystone), which is **blocked on many government
-networks**. Workaround: run it once from a home network or cellular
-hotspot. The resulting EC2 access key + secret are portable — once
-created they work from anywhere over port 443. Save them to a password
-manager.
+**C. EC2 (S3-compatible) credentials.** See “Set up write access (once)”
+in
+[`vignette("getting-started")`](https://predictiveecology.github.io/buckethost/articles/getting-started.md).
 
 **D. Public container.** In the Arbutus dashboard: *Project → Object
 Store → Containers → Create container* named e.g. `predictiveecology`.
@@ -76,32 +76,8 @@ Fir ships `rclone` (verify with `rclone version`). You need two remotes:
 
 ### 1a. The `arbutus` S3 remote
 
-`rclone config` → `n` (new) → name `arbutus` → storage `s3` → provider
-`Other` → `env_auth` false → paste your EC2 access key / secret → region
-blank → endpoint `https://object-arbutus.cloud.computecanada.ca` →
-location_constraint blank → acl `private` → **Edit advanced config:
-yes**, and set the one critical option:
-
-    force_path_style = true
-
-Arbutus’s Swift S3 gateway doesn’t support virtual-hosted-style URLs
-(`bucket.endpoint.com`). Without `force_path_style = true`, every
-request fails with signature or DNS errors. Accept defaults for
-everything else. The resulting `~/.config/rclone/rclone.conf` should
-contain:
-
-``` ini
-[arbutus]
-type = s3
-provider = Other
-access_key_id = <key>
-secret_access_key = <secret>
-endpoint = https://object-arbutus.cloud.computecanada.ca
-acl = private
-force_path_style = true
-```
-
-Test: `rclone lsd arbutus:` should list your container(s) with no error.
+Set it up on the transfer node as in “Set up write access (once)” in
+[`vignette("getting-started")`](https://predictiveecology.github.io/buckethost/articles/getting-started.md).
 
 ### 1b. The `gdrive` remote
 
@@ -190,7 +166,7 @@ From any R session with the `arbutus` rclone remote configured:
 
 library(buckethost)
 options(
-  buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
+  buckethost.endpoint  = "https://object-arbutus.alliancecan.ca",
   buckethost.container = "predictiveecology",
   buckethost.remote    = "arbutus"
 )
@@ -211,7 +187,7 @@ generateIndexes(
 ```
 
 Browse it at
-`https://object-arbutus.cloud.computecanada.ca/predictiveecology/index.html`.
+`https://object-arbutus.alliancecan.ca/<project-id>:predictiveecology/index.html`.
 Re-run
 [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
 any time data is added or changed.
