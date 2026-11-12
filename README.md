@@ -38,11 +38,22 @@ Most functions resolve their connection details from options (or
 
 ```r
 options(
-  buckethost.endpoint  = "https://object-arbutus.cloud.computecanada.ca",
+  buckethost.endpoint  = "https://object-arbutus.alliancecan.ca",
   buckethost.container = "predictiveecology",
   buckethost.remote    = "arbutus"   # the rclone remote name
 )
 ```
+
+**Arbutus moved in 2026.** The old endpoint,
+`object-arbutus.cloud.computecanada.ca`, is retired and the package default
+still points at it, so set `buckethost.endpoint` as above. On the new
+endpoint, public URLs include the project id:
+`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`. To read
+anonymously, set `buckethost.container = "<project-id>:predictiveecology"`.
+Use the bare bucket name for `bucketUpload()`, `bucketDelete()` and
+`bucketVerify()`, because rclone wants it without the prefix. The
+`predictiveecology` bucket allows public reads but not public listing, so
+`bucketLs()` and `generateIndexes()` don't work against it anonymously.
 
 ## Read remote rasters without downloading
 
