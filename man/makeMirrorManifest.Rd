@@ -9,7 +9,8 @@ makeMirrorManifest(
   prefix = "",
   driveFolder = NULL,
   endpoint = NULL,
-  file = NULL
+  file = NULL,
+  directories = FALSE
 )
 }
 \arguments{
@@ -29,10 +30,16 @@ their \strong{path relative to the folder} (see Details). Requires the
 
 \item{file}{Optional path to write the manifest to as CSV. When \code{NULL}
 (default) no file is written.}
+
+\item{directories}{Logical. When \code{TRUE}, append one \emph{directory remap} row per
+Google Drive folder (mapping its folder id to the bucket's prefix-listing
+URL) and add a \code{type} column (\code{"file"}/\code{"dir"}). Requires \code{driveFolder}.
+Default \code{FALSE} (file rows only, unchanged schema).}
 }
 \value{
 A \code{data.frame} with columns \code{filename}, \code{key}, \code{url}, and (when
-\code{driveFolder} is given) \code{id}. Returned invisibly when \code{file} is written,
+\code{driveFolder} is given) \code{id}; plus a \code{type} column and appended directory
+rows when \code{directories = TRUE}. Returned invisibly when \code{file} is written,
 visibly otherwise.
 }
 \description{
@@ -43,6 +50,14 @@ source to its mirrored copy on the bucket. Optionally writes the table to a
 CSV.
 }
 \details{
+With \code{directories = TRUE} the manifest also gains one row per Google Drive
+\strong{folder} (a \emph{directory remap}): its \code{url} is the bucket's S3 prefix-listing
+URL for the matching folder (\verb{<base>/?prefix=<key>/&delimiter=/}), and a
+\code{type} column distinguishes \code{"dir"} rows from \code{"file"} rows. A consumer
+(e.g. \code{reproducible}) can then enumerate a Drive folder's contents from the
+public bucket listing instead of \code{googledrive::drive_ls()}, so listing a
+folder needs no Google authentication.
+
 Matching to Drive is by \strong{relative path}, not bare file name. The bucket
 object \code{SCANFI_v2/1985/age.tif} (with \code{prefix = "SCANFI_v2"}) is matched to
 the Drive file at \code{1985/age.tif} under \code{driveFolder}. This keeps identical

@@ -125,6 +125,51 @@ test_that("unmatched objects keep id = NA and the warning names them", {
   expect_equal(m$id[m$key == "SCANFI_v2/1985/age.tif"], "A85")
 })
 
+test_that("driveIsFolder flags ids that are parents of other items", {
+  expect_equal(
+    buckethost:::driveIsFolder(mockDriveLs()),
+    c(TRUE, TRUE, FALSE, FALSE, FALSE) # F1985, F1990 are folders; the .tifs are not
+  )
+})
+
+test_that("directories = TRUE appends prefix-listing rows with a type column", {
+  skip_if_not(
+    requireNamespace("googledrive", quietly = TRUE),
+    "googledrive not installed"
+  )
+  testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
+  testthat::local_mocked_bindings(
+    bucketBaseUrl = function(container = NULL, endpoint = NULL) "https://host/predictiveecology"
+  )
+  testthat::local_mocked_bindings(
+    as_id = function(x) "ROOT", drive_ls = mockDriveLs, .package = "googledrive"
+  )
+  m <- makeMirrorManifest("predictiveecology", prefix = "SCANFI_v2",
+                          driveFolder = "folder", directories = TRUE)
+
+  expect_true("type" %in% names(m))
+  # 3 file rows + 2 directory rows (1985/, 1990/)
+  expect_equal(sum(m$type == "file"), 3L)
+  expect_equal(sum(m$type == "dir"), 2L)
+
+  dirs <- m[m$type == "dir", ]
+  expect_setequal(dirs$id, c("F1985", "F1990"))
+  expect_setequal(dirs$key, c("SCANFI_v2/1985/", "SCANFI_v2/1990/"))
+  # url is the S3 prefix-listing form (slashes percent-encoded by URLencode)
+  expect_match(
+    dirs$url[dirs$id == "F1985"],
+    "^https://host/predictiveecology/\\?prefix=SCANFI_v2%2F1985%2F&delimiter=/$"
+  )
+})
+
+test_that("directories = TRUE without driveFolder errors clearly", {
+  testthat::local_mocked_bindings(bucketLs = mockLs, bucketUrl = mockUrl)
+  expect_error(
+    makeMirrorManifest("predictiveecology", directories = TRUE),
+    "directories = TRUE needs 'driveFolder'"
+  )
+})
+
 test_that("falls back to name matching (with warning) when parents are absent", {
   skip_if_not(
     requireNamespace("googledrive", quietly = TRUE),

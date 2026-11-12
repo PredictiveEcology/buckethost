@@ -39,6 +39,25 @@ driveRelPaths <- function(d, rootId) {
   }, character(1), USE.NAMES = FALSE)
 }
 
+# Which rows of a googledrive listing are *folders*? A file can never be a
+# parent, so any id that appears as another listed item's parent is a folder.
+# Empty folders have no children and so are not detected -- which is fine for a
+# mirror manifest, since an empty folder mirrors no objects. Returns a logical
+# vector aligned with `d`'s rows (all FALSE if the listing carries no parent
+# information).
+driveIsFolder <- function(d) {
+  res <- d$drive_resource
+  if (is.null(res)) {
+    return(rep(FALSE, nrow(d)))
+  }
+  getParent <- function(r) {
+    p <- tryCatch(r[["parents"]], error = function(e) NULL)
+    if (is.null(p) || length(p) == 0L) NA_character_ else as.character(p)[[1]]
+  }
+  parentId <- vapply(res, getParent, character(1))
+  as.character(d$id) %in% unique(parentId[!is.na(parentId)])
+}
+
 #' Build a mirror manifest for a bucket
 #'
 #' Produces a "remap" table: one row per object in the bucket, giving its
@@ -46,6 +65,14 @@ driveRelPaths <- function(d, rootId) {
 #' `id` column with the matching Google Drive file id, so you can map a Drive
 #' source to its mirrored copy on the bucket. Optionally writes the table to a
 #' CSV.
+#'
+#' With `directories = TRUE` the manifest also gains one row per Google Drive
+#' **folder** (a *directory remap*): its `url` is the bucket's S3 prefix-listing
+#' URL for the matching folder (`<base>/?prefix=<key>/&delimiter=/`), and a
+#' `type` column distinguishes `"dir"` rows from `"file"` rows. A consumer
+#' (e.g. `reproducible`) can then enumerate a Drive folder's contents from the
+#' public bucket listing instead of `googledrive::drive_ls()`, so listing a
+#' folder needs no Google authentication.
 #'
 #' @param bucket Container (bucket) name. When `NULL` (default), resolved via
 #'   [bucketContainer()].
@@ -59,6 +86,10 @@ driveRelPaths <- function(d, rootId) {
 #' @param endpoint Optional endpoint override (see [bucketConfig]).
 #' @param file Optional path to write the manifest to as CSV. When `NULL`
 #'   (default) no file is written.
+#' @param directories Logical. When `TRUE`, append one *directory remap* row per
+#'   Google Drive folder (mapping its folder id to the bucket's prefix-listing
+#'   URL) and add a `type` column (`"file"`/`"dir"`). Requires `driveFolder`.
+#'   Default `FALSE` (file rows only, unchanged schema).
 #'
 #' @details
 #' Matching to Drive is by **relative path**, not bare file name. The bucket
@@ -74,7 +105,8 @@ driveRelPaths <- function(d, rootId) {
 #' `NA` and a count is warned.
 #'
 #' @return A `data.frame` with columns `filename`, `key`, `url`, and (when
-#'   `driveFolder` is given) `id`. Returned invisibly when `file` is written,
+#'   `driveFolder` is given) `id`; plus a `type` column and appended directory
+#'   rows when `directories = TRUE`. Returned invisibly when `file` is written,
 #'   visibly otherwise.
 #' @seealso [bucketLs()], [bucketUrl()]
 #' @export
@@ -95,7 +127,15 @@ makeMirrorManifest <- function(bucket = NULL,
                                prefix = "",
                                driveFolder = NULL,
                                endpoint = NULL,
-                               file = NULL) {
+                               file = NULL,
+                               directories = FALSE) {
+  if (isTRUE(directories) && is.null(driveFolder)) {
+    stop(
+      "directories = TRUE needs 'driveFolder': a directory remap row carries ",
+      "the Google Drive folder id, which comes from the Drive listing.",
+      call. = FALSE
+    )
+  }
   objs <- bucketLs(prefix = prefix, container = bucket, endpoint = endpoint)
 
   m <- data.frame(
@@ -157,6 +197,40 @@ makeMirrorManifest <- function(bucket = NULL,
           ),
           call. = FALSE
         )
+      }
+    }
+  }
+
+  if (isTRUE(directories)) {
+    m$type <- "file"
+    # `driveRel` / `d` come from the driveFolder block above (always run when
+    # directories = TRUE). Skip directory rows if folder paths are unavailable.
+    if (is.null(driveRel)) {
+      warning(
+        "directories = TRUE: could not reconstruct Google Drive folder paths ",
+        "(no parent info in the listing); no directory rows added.",
+        call. = FALSE
+      )
+    } else {
+      isDir <- driveIsFolder(d)
+      if (any(isDir)) {
+        rel <- driveRel[isDir]
+        bp <- if (nzchar(pfx)) paste0(pfx, "/", rel) else rel
+        base <- bucketBaseUrl(container = bucket, endpoint = endpoint)
+        listUrl <- paste0(
+          base, "/?prefix=",
+          vapply(paste0(bp, "/"), utils::URLencode, character(1), reserved = TRUE),
+          "&delimiter=/"
+        )
+        dirRows <- data.frame(
+          filename = basename(rel),
+          key = paste0(bp, "/"),
+          url = listUrl,
+          id = as.character(d$id[isDir]),
+          type = "dir",
+          stringsAsFactors = FALSE
+        )
+        m <- rbind(m, dirRows[names(m)])
       }
     }
   }
