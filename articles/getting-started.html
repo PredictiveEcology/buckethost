@@ -59,7 +59,7 @@
       <h1>Getting started with buckethost</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/v0.3.1/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started.Rmd</code></div>
     </div>
 
@@ -209,6 +209,40 @@ cheap.</p>
 <span><span class="fu"><a href="../reference/bucketDelete.html">bucketDelete</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/obsolete.tif"</span><span class="op">)</span>          <span class="co"># prompts to confirm</span></span>
 <span><span class="fu"><a href="../reference/bucketDelete.html">bucketDelete</a></span><span class="op">(</span><span class="st">"SCANFI_v2/old"</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>              confirm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>                         <span class="co"># whole prefix, no prompt</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="uploading-a-large-folder">Uploading a large folder<a class="anchor" aria-label="anchor" href="#uploading-a-large-folder"></a>
+</h3>
+<p>For a big upload (hundreds of GB or more), take a few minutes
+first.</p>
+<p><strong>Check the speed.</strong> Time the upload of one large file.
+From a government-network host, uploads have run at about 1 MB/s, so 1
+TB would take about 12 days. If yours is that slow, copy the data to a
+machine on the research network (e.g. an Alliance cluster) and upload
+from there.</p>
+<p><strong>Check that new files are public.</strong> Upload one small
+file and read it back without credentials.
+<code>"HTTP/1.1 200 OK"</code> means it is public. A 403 means it landed
+private, so fix the bucket’s access before uploading the rest.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketUpload.html">bucketUpload</a></span><span class="op">(</span><span class="st">"~/data/climate/README.txt"</span>, <span class="st">"climate/README.txt"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/curlGetHeaders.html" class="external-link">curlGetHeaders</a></span><span class="op">(</span><span class="fu"><a href="../reference/bucketUrl.html">bucketUrl</a></span><span class="op">(</span><span class="st">"climate/README.txt"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></code></pre></div>
+<p><strong>Dry run.</strong> rclone lists what it would copy and
+transfers nothing:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/bucketUpload.html">bucketUpload</a></span><span class="op">(</span><span class="st">"~/data/climate"</span>, <span class="st">"climate"</span>, dryRun <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Upload with a log.</strong> <code><a href="../reference/bucketUpload.html">bucketUpload()</a></code>
+prints nothing until rclone finishes, so write a log and follow it from
+a shell with <code>tail -f ~/upload.log</code>. Run R inside
+<code>tmux</code> so a dropped connection doesn’t stop it. If the upload
+stops partway, run the same call again: files already uploaded are
+skipped.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketUpload.html">bucketUpload</a></span><span class="op">(</span><span class="st">"~/data/climate"</span>, <span class="st">"climate"</span>,</span>
+<span>              extra <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"--retries"</span>, <span class="st">"10"</span>, <span class="st">"--stats"</span>, <span class="st">"60s"</span>,</span>
+<span>                        <span class="st">"--log-file"</span>, <span class="st">"~/upload.log"</span>, <span class="st">"--log-level"</span>, <span class="st">"INFO"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/bucketVerify.html">bucketVerify</a></span><span class="op">(</span><span class="st">"~/data/climate"</span>, <span class="st">"climate"</span><span class="op">)</span><span class="op">$</span><span class="va">ok</span>   <span class="co"># TRUE: every file there, same size</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="generate-the-browsable-catalogue">Generate the browsable catalogue<a class="anchor" aria-label="anchor" href="#generate-the-browsable-catalogue"></a>
@@ -216,7 +250,7 @@ cheap.</p>
 <p><code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> writes one <code>index.html</code> per
 folder level (sortable columns, breadcrumbs, a per-page disclaimer
 block) and uploads them:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span></span>
 <span>  heading <span class="op">=</span> <span class="st">"PredictiveEcology Temporary Data Repository"</span>,</span>
 <span>  disclaimerHtml <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
@@ -230,11 +264,11 @@ block) and uploads them:</p>
 <code>&lt;endpoint&gt;/&lt;container&gt;/index.html</code>. Inspect the
 pages without uploading by passing <code>dryRun = TRUE</code>, which
 returns the HTML:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span>dryRun <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pages</span><span class="op">[[</span><span class="st">""</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>        <span class="co"># the root index.html</span></span></code></pre></div>
 <p>To customise the look, copy the shipped template and edit it:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.copy</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"templates"</span>, <span class="st">"index.html"</span>, package <span class="op">=</span> <span class="st">"buckethost"</span><span class="op">)</span>,</span>
 <span>  <span class="st">"my-template.html"</span></span>
