@@ -233,9 +233,11 @@ generateIndexes(
 )
 ```
 
-Browse the result at `<endpoint>/<container>/index.html`. Inspect the
-pages without uploading by passing `dryRun = TRUE`, which returns the
-HTML:
+Browse the result at `<endpoint>/<container>/index.html`; for the
+PredictiveEcology bucket that is
+<https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html>.
+Inspect the pages without uploading by passing `dryRun = TRUE`, which
+returns the HTML:
 
 ``` r
 

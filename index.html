@@ -60,6 +60,7 @@
 <blockquote>
 <p>Host and catalogue files on any S3-compatible object store.</p>
 </blockquote>
+<p><strong>Browse the PredictiveEcology data catalogue:</strong> <a href="https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html" class="external-link uri">https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html</a></p>
 <p><code>buckethost</code> turns a bucket into a browsable, remotely readable data repository. It was built to host open geospatial data (Cloud-Optimized GeoTIFFs) on the Digital Research Alliance of Canada’s <strong>Arbutus</strong> object storage, but nothing in it is Arbutus-specific — it works against any S3-compatible store: Amazon S3, OpenStack Swift, Ceph, MinIO, Cloudflare R2, Backblaze B2.</p>
 <p>It does three things:</p>
 <table class="table">
@@ -141,7 +142,7 @@
 <span>  <span class="op">)</span>,</span>
 <span>  hostNote <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>This writes one <code>index.html</code> per “folder” in the bucket (sortable columns, breadcrumbs, per-page disclaimer) and uploads them. Browse the result at <code>&lt;endpoint&gt;/&lt;container&gt;/index.html</code>. Re-run whenever the data changes.</p>
+<p>This writes one <code>index.html</code> per “folder” in the bucket (sortable columns, breadcrumbs, per-page disclaimer) and uploads them. Browse the result at <code>&lt;endpoint&gt;/&lt;container&gt;/index.html</code>; for the PredictiveEcology bucket that is <a href="https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html" class="external-link uri">https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html</a>. Re-run whenever the data changes.</p>
 <p>The HTML is produced from a template you can override (<code>system.file("templates", "index.html", package = "buckethost")</code>); pass <code>template = "my-template.html"</code> to customise it. Tokens: <code>{{pageTitle}}</code>, <code>{{repoHeading}}</code>, <code>{{disclaimerHtml}}</code>, <code>{{viewingHeading}}</code>, <code>{{breadcrumb}}</code>, <code>{{parentLink}}</code>, <code>{{rows}}</code>, <code>{{hostNote}}</code>, <code>{{timestamp}}</code>.</p>
 </div>
 <div class="section level2">

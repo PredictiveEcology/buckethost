@@ -261,9 +261,10 @@ block) and uploads them:</p>
 <span>  hostNote <span class="op">=</span> <span class="st">"Hosted on the Digital Research Alliance of Canada's Arbutus object storage."</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Browse the result at
-<code>&lt;endpoint&gt;/&lt;container&gt;/index.html</code>. Inspect the
-pages without uploading by passing <code>dryRun = TRUE</code>, which
-returns the HTML:</p>
+<code>&lt;endpoint&gt;/&lt;container&gt;/index.html</code>; for the
+PredictiveEcology bucket that is <a href="https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html" class="external-link uri">https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html</a>.
+Inspect the pages without uploading by passing
+<code>dryRun = TRUE</code>, which returns the HTML:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span>dryRun <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pages</span><span class="op">[[</span><span class="st">""</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>        <span class="co"># the root index.html</span></span></code></pre></div>

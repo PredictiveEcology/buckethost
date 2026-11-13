@@ -187,7 +187,7 @@ generateIndexes(
 ```
 
 Browse it at
-`https://object-arbutus.alliancecan.ca/<project-id>:predictiveecology/index.html`.
+<https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html>.
 Re-run
 [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
 any time data is added or changed.

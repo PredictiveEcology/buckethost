@@ -2,6 +2,9 @@
 
 > Host and catalogue files on any S3-compatible object store.
 
+**Browse the PredictiveEcology data catalogue:**
+<https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html>
+
 `buckethost` turns a bucket into a browsable, remotely readable data
 repository. It was built to host open geospatial data (Cloud-Optimized
 GeoTIFFs) on the Digital Research Alliance of Canada’s **Arbutus**
@@ -92,8 +95,10 @@ generateIndexes(
 
 This writes one `index.html` per “folder” in the bucket (sortable
 columns, breadcrumbs, per-page disclaimer) and uploads them. Browse the
-result at `<endpoint>/<container>/index.html`. Re-run whenever the data
-changes.
+result at `<endpoint>/<container>/index.html`; for the PredictiveEcology
+bucket that is
+<https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/index.html>.
+Re-run whenever the data changes.
 
 The HTML is produced from a template you can override
 (`system.file("templates", "index.html", package = "buckethost")`); pass
