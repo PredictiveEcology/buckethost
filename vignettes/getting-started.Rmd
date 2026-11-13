@@ -160,6 +160,43 @@ bucketDelete("SCANFI_v2/old", recursive = TRUE,
               confirm = FALSE)                         # whole prefix, no prompt
 ```
 
+### Uploading a large folder
+
+For a big upload (hundreds of GB or more), take a few minutes first.
+
+**Check the speed.** Time the upload of one large file. From a
+government-network host, uploads have run at about 1 MB/s, so 1 TB would take
+about 12 days. If yours is that slow, copy the data to a machine on the
+research network (e.g. an Alliance cluster) and upload from there.
+
+**Check that new files are public.** Upload one small file and read it back
+without credentials. `"HTTP/1.1 200 OK"` means it is public. A 403 means it
+landed private, so fix the bucket's access before uploading the rest.
+
+```{r}
+bucketUpload("~/data/climate/README.txt", "climate/README.txt")
+curlGetHeaders(bucketUrl("climate/README.txt"))[1]
+```
+
+**Dry run.** rclone lists what it would copy and transfers nothing:
+
+```{r}
+cat(bucketUpload("~/data/climate", "climate", dryRun = TRUE), sep = "\n")
+```
+
+**Upload with a log.** `bucketUpload()` prints nothing until rclone finishes,
+so write a log and follow it from a shell with `tail -f ~/upload.log`. Run R
+inside `tmux` so a dropped connection doesn't stop it. If the upload stops
+partway, run the same call again: files already uploaded are skipped.
+
+```{r}
+bucketUpload("~/data/climate", "climate",
+              extra = c("--retries", "10", "--stats", "60s",
+                        "--log-file", "~/upload.log", "--log-level", "INFO"))
+
+bucketVerify("~/data/climate", "climate")$ok   # TRUE: every file there, same size
+```
+
 ## Generate the browsable catalogue
 
 `generateIndexes()` writes one `index.html` per folder level (sortable
