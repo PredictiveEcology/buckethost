@@ -17,7 +17,7 @@ library(buckethost)
 
 options(
   buckethost.endpoint  = "https://object-arbutus.alliancecan.ca",
-  buckethost.container = "predictiveecology",
+  buckethost.container = "529feda02d404836b0e91b1d360b4df0:predictiveecology",
   buckethost.remote    = "arbutus"   # name of the rclone remote
 )
 ```
@@ -25,13 +25,12 @@ options(
 **Arbutus moved in 2026.** The old endpoint,
 `object-arbutus.cloud.computecanada.ca`, is retired and the package
 default still points at it, so set `buckethost.endpoint` as above. On
-the new endpoint, public URLs include the project id:
-`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`. To
-read anonymously, set
-`buckethost.container = "<project-id>:predictiveecology"`; the
-rclone-based functions drop the prefix themselves. The
-`predictiveecology` bucket allows public reads but not public listing,
-so
+the new endpoint, public URLs include the project id
+(`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`),
+so the container includes it too; the rclone-based functions drop it
+themselves. `buckethost.remote` is whatever you named your rclone
+remote. The `predictiveecology` bucket allows public reads but not
+public listing, so
 [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
 (and with it
 [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
@@ -58,7 +57,7 @@ show how these combine:
 
 ``` r
 
-bucketBaseUrl()        #> "https://object-arbutus.alliancecan.ca/predictiveecology"
+bucketBaseUrl()        #> "https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology"
 bucketRcloneRemote()   #> "arbutus:predictiveecology"
 ```
 
@@ -82,7 +81,7 @@ Build URLs from keys:
 ``` r
 
 bucketUrl("SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif")
-#> "https://object-arbutus.alliancecan.ca/predictiveecology/SCANFI_v2/1985/..."
+#> "https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/SCANFI_v2/1985/..."
 ```
 
 ## Read rasters remotely

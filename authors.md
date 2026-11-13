@@ -9,16 +9,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/PredictiveEcology/buckethost/blob/v0.3.0/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/PredictiveEcology/buckethost/blob/main/DESCRIPTION)
 
 McIntire E (2026). *buckethost: Host and Catalogue Files on
-S3-Compatible Object Storage*. R package version 0.3.0,
+S3-Compatible Object Storage*. R package version 0.3.1,
 <https://github.com/PredictiveEcology/buckethost>.
 
     @Manual{,
       title = {buckethost: Host and Catalogue Files on S3-Compatible Object Storage},
       author = {Eliot McIntire},
       year = {2026},
-      note = {R package version 0.3.0},
+      note = {R package version 0.3.1},
       url = {https://github.com/PredictiveEcology/buckethost},
     }

@@ -19,7 +19,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,7 @@
       <h1>Getting started with buckethost</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/v0.3.0/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started.Rmd</code></div>
     </div>
 
@@ -81,20 +81,19 @@ ideally in your <code>.Rprofile</code>:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
 <span>  buckethost.endpoint  <span class="op">=</span> <span class="st">"https://object-arbutus.alliancecan.ca"</span>,</span>
-<span>  buckethost.container <span class="op">=</span> <span class="st">"predictiveecology"</span>,</span>
+<span>  buckethost.container <span class="op">=</span> <span class="st">"529feda02d404836b0e91b1d360b4df0:predictiveecology"</span>,</span>
 <span>  buckethost.remote    <span class="op">=</span> <span class="st">"arbutus"</span>   <span class="co"># name of the rclone remote</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Arbutus moved in 2026.</strong> The old endpoint,
 <code>object-arbutus.cloud.computecanada.ca</code>, is retired and the
 package default still points at it, so set
 <code>buckethost.endpoint</code> as above. On the new endpoint, public
-URLs include the project id:
-<code>https://object-arbutus.alliancecan.ca/&lt;project-id&gt;:&lt;bucket&gt;/&lt;key&gt;</code>.
-To read anonymously, set
-<code>buckethost.container = "&lt;project-id&gt;:predictiveecology"</code>;
-the rclone-based functions drop the prefix themselves. The
-<code>predictiveecology</code> bucket allows public reads but not public
-listing, so <code><a href="../reference/bucketLs.html">bucketLs()</a></code> (and with it
+URLs include the project id
+(<code>https://object-arbutus.alliancecan.ca/&lt;project-id&gt;:&lt;bucket&gt;/&lt;key&gt;</code>),
+so the container includes it too; the rclone-based functions drop it
+themselves. <code>buckethost.remote</code> is whatever you named your
+rclone remote. The <code>predictiveecology</code> bucket allows public
+reads but not public listing, so <code><a href="../reference/bucketLs.html">bucketLs()</a></code> (and with it
 <code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> and <code><a href="../reference/makeMirrorManifest.html">makeMirrorManifest()</a></code>)
 lists through your rclone remote instead, which needs write access set
 up.</p>
@@ -114,7 +113,7 @@ indexes) use it.</li>
 <p><code><a href="../reference/bucketConfig.html">bucketBaseUrl()</a></code> and <code><a href="../reference/bucketConfig.html">bucketRcloneRemote()</a></code>
 show how these combine:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketConfig.html">bucketBaseUrl</a></span><span class="op">(</span><span class="op">)</span>        <span class="co">#&gt; "https://object-arbutus.alliancecan.ca/predictiveecology"</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketConfig.html">bucketBaseUrl</a></span><span class="op">(</span><span class="op">)</span>        <span class="co">#&gt; "https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology"</span></span>
 <span><span class="fu"><a href="../reference/bucketConfig.html">bucketRcloneRemote</a></span><span class="op">(</span><span class="op">)</span>   <span class="co">#&gt; "arbutus:predictiveecology"</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -132,7 +131,7 @@ rclone remote instead:</p>
 <p>Build URLs from keys:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/bucketUrl.html">bucketUrl</a></span><span class="op">(</span><span class="st">"SCANFI_v2/1985/SCANFI_age_median_1985_v2.tif"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; "https://object-arbutus.alliancecan.ca/predictiveecology/SCANFI_v2/1985/..."</span></span></code></pre></div>
+<span><span class="co">#&gt; "https://object-arbutus.alliancecan.ca/529feda02d404836b0e91b1d360b4df0:predictiveecology/SCANFI_v2/1985/..."</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="read-rasters-remotely">Read rasters remotely<a class="anchor" aria-label="anchor" href="#read-rasters-remotely"></a>

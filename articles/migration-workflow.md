@@ -167,7 +167,7 @@ From any R session with the `arbutus` rclone remote configured:
 library(buckethost)
 options(
   buckethost.endpoint  = "https://object-arbutus.alliancecan.ca",
-  buckethost.container = "predictiveecology",
+  buckethost.container = "529feda02d404836b0e91b1d360b4df0:predictiveecology",
   buckethost.remote    = "arbutus"
 )
 
