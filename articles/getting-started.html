@@ -19,7 +19,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -172,7 +172,7 @@ to a password manager.</p>
 <code>Other</code> → <code>env_auth</code> false → paste your EC2 access
 key / secret → region blank → endpoint
 <code>https://object-arbutus.alliancecan.ca</code> → location_constraint
-blank → acl <code>private</code> → <strong>Edit advanced config:
+blank → acl <code>public-read</code> → <strong>Edit advanced config:
 yes</strong>, and set the one critical option:</p>
 <pre><code><span><span class="va">force_path_style</span> <span class="op">=</span> <span class="va">true</span></span></code></pre>
 <p>Arbutus’s Swift S3 gateway doesn’t support virtual-hosted-style URLs
@@ -186,8 +186,12 @@ or DNS errors. Accept defaults for everything else. The resulting
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="dt">access_key_id </span><span class="ot">=</span><span class="st"> &lt;key&gt;</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="dt">secret_access_key </span><span class="ot">=</span><span class="st"> &lt;secret&gt;</span></span>
 <span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="dt">endpoint </span><span class="ot">=</span><span class="st"> https://object-arbutus.alliancecan.ca</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="dt">acl </span><span class="ot">=</span><span class="st"> private</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="dt">acl </span><span class="ot">=</span><span class="st"> public-read</span></span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="dt">force_path_style </span><span class="ot">=</span><span class="st"> </span><span class="kw">true</span></span></code></pre></div>
+<p><code>acl = public-read</code> makes every file you upload readable
+by anyone, which is what a public data bucket needs. On the new Arbutus,
+files uploaded without it are private, even in a bucket whose existing
+files are public.</p>
 <p>Test: <code>rclone lsd arbutus:</code> should list your container(s)
 with no error.</p>
 </div>
@@ -267,7 +271,7 @@ Inspect the pages without uploading by passing
 <code>dryRun = TRUE</code>, which returns the HTML:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIndexes.html">generateIndexes</a></span><span class="op">(</span>dryRun <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pages</span><span class="op">[[</span><span class="st">""</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>        <span class="co"># the root index.html</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">pages</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>         <span class="co"># the root index.html</span></span></code></pre></div>
 <p>To customise the look, copy the shipped template and edit it:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.copy</a></span><span class="op">(</span></span>

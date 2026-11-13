@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">buckethost</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,14 @@
       <small>Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.2" id="buckethost-032">buckethost 0.3.2<a class="anchor" aria-label="anchor" href="#buckethost-032"></a></h2>
+<ul><li>
+<code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> uploads its pages public-read. The new Arbutus makes uploaded files private by default, so regenerating the catalogue there made it unreadable.</li>
+<li>
+<code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> no longer shows the project id (<code>"&lt;project-id&gt;:"</code>) in the page heading and breadcrumb.</li>
+<li>Getting started: the rclone remote is set up with <code>acl = public-read</code>, so uploaded files are public; and the <code>generateIndexes(dryRun = TRUE)</code> example no longer errors.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="buckethost-031">buckethost 0.3.1<a class="anchor" aria-label="anchor" href="#buckethost-031"></a></h2>
 <ul><li>A failed bucket listing now reports the HTTP status instead of only “cannot open the connection”, and on a 404 suggests the <code>"&lt;project-id&gt;:&lt;bucket&gt;"</code> container form the new Arbutus needs.</li>

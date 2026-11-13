@@ -127,8 +127,8 @@ manager.
 `arbutus` → storage `s3` → provider `Other` → `env_auth` false → paste
 your EC2 access key / secret → region blank → endpoint
 `https://object-arbutus.alliancecan.ca` → location_constraint blank →
-acl `private` → **Edit advanced config: yes**, and set the one critical
-option:
+acl `public-read` → **Edit advanced config: yes**, and set the one
+critical option:
 
     force_path_style = true
 
@@ -145,9 +145,14 @@ provider = Other
 access_key_id = <key>
 secret_access_key = <secret>
 endpoint = https://object-arbutus.alliancecan.ca
-acl = private
+acl = public-read
 force_path_style = true
 ```
+
+`acl = public-read` makes every file you upload readable by anyone,
+which is what a public data bucket needs. On the new Arbutus, files
+uploaded without it are private, even in a bucket whose existing files
+are public.
 
 Test: `rclone lsd arbutus:` should list your container(s) with no error.
 
@@ -242,7 +247,7 @@ returns the HTML:
 ``` r
 
 pages <- generateIndexes(dryRun = TRUE)
-cat(pages[[""]])        # the root index.html
+cat(pages[[1]])         # the root index.html
 ```
 
 To customise the look, copy the shipped template and edit it:
