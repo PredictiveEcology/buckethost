@@ -9,7 +9,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/PredictiveEcology/buckethost/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/PredictiveEcology/buckethost/blob/v0.3.1/DESCRIPTION)
 
 McIntire E (2026). *buckethost: Host and Catalogue Files on
 S3-Compatible Object Storage*. R package version 0.3.1,
