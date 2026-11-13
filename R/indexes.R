@@ -153,7 +153,7 @@ buildIndexPages <- function(allFiles, template, opts) {
 #'
 #' Lists every object in the bucket, then writes one `index.html` per
 #' "directory" level (including the root) and uploads them back to the bucket
-#' with `rclone`. The result is a static, dependency-free website: open
+#' with `rclone`, readable by anyone (`--s3-acl public-read`). The result is a static, dependency-free website: open
 #' `<base_url>/index.html` in any browser to navigate the tree, sort columns,
 #' and click through to files. Each page also carries a configurable
 #' disclaimer/"hero" block so context follows users wherever they land.
@@ -229,7 +229,7 @@ generateIndexes <- function(container = NULL,
   container <- bucketContainer(container)
   base_url <- bucketBaseUrl(container, endpoint)
   rcloneRemote <- bucketRcloneRemote(container, remote)
-  if (is.null(heading)) heading <- container
+  if (is.null(heading)) heading <- bareContainer(container)
 
   tmpl <- paste(readLines(templatePath(template), warn = FALSE), collapse = "\n")
 
@@ -243,7 +243,7 @@ generateIndexes <- function(container = NULL,
     heading = heading,
     disclaimerHtml = disclaimerHtml,
     hostNote = hostNote,
-    rootLabel = container,
+    rootLabel = bareContainer(container),
     timestamp = format(Sys.time(), "%Y-%m-%d %H:%M %Z")
   )
 
@@ -271,7 +271,10 @@ generateIndexes <- function(container = NULL,
 
     res <- tryCatch(
       {
-        rclone(c("copyto", tmpfile, dest), path = rclonePath)
+        # Upload public-read: the catalogue is for anonymous browsers, and a
+        # store may make new objects private by default (the new Arbutus does).
+        rclone(c("copyto", "--s3-acl", "public-read", tmpfile, dest),
+               path = rclonePath)
         TRUE
       },
       error = function(e) {

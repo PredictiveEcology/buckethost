@@ -97,5 +97,8 @@ bucketBaseUrl <- function(container = NULL, endpoint = NULL) {
 bucketRcloneRemote <- function(container = NULL, remote = NULL) {
   # rclone names the bucket without the "<project-id>:" prefix that public URLs
   # on some stores (the new Arbutus) need, so drop it here.
-  paste0(bucketRemote(remote), ":", sub("^[^:/]+:", "", bucketContainer(container)))
+  paste0(bucketRemote(remote), ":", bareContainer(bucketContainer(container)))
 }
+
+# The bucket name without a "<project-id>:" prefix.
+bareContainer <- function(container) sub("^[^:/]+:", "", container)

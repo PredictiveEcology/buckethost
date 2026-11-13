@@ -1,3 +1,14 @@
+# buckethost 0.3.2
+
+* `generateIndexes()` uploads its pages public-read. The new Arbutus makes
+  uploaded files private by default, so regenerating the catalogue there made
+  it unreadable.
+* `generateIndexes()` no longer shows the project id (`"<project-id>:"`) in the
+  page heading and breadcrumb.
+* Getting started: the rclone remote is set up with `acl = public-read`, so
+  uploaded files are public; and the `generateIndexes(dryRun = TRUE)` example
+  no longer errors.
+
 # buckethost 0.3.1
 
 * A failed bucket listing now reports the HTTP status instead of only "cannot

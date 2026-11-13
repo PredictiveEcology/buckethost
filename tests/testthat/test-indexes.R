@@ -121,3 +121,25 @@ test_that("the upload loop handles the root (\"\") page without subscript error"
     c("", "SCANFI_v2", "SCANFI_v2/1985", "SCANFI_v2/1990")
   )
 })
+
+test_that("a project-id prefix stays out of the heading and breadcrumb", {
+  files <- data.frame(key = "a/b.tif", size = 1, modified = "2026-01-01",
+                      stringsAsFactors = FALSE)
+  p <- generateIndexes(container = "123abc:mybucket", endpoint = "https://e",
+                       allFiles = files, dryRun = TRUE, quiet = TRUE)
+  expect_false(any(grepl("123abc", unlist(p), fixed = TRUE)))
+  expect_true(grepl("<h1>mybucket</h1>", p[[1]], fixed = TRUE))
+})
+
+test_that("index pages are uploaded public-read", {
+  skip_on_os("windows")
+  log <- tempfile()
+  stub <- tempfile(fileext = ".sh")
+  writeLines(c("#!/bin/sh", sprintf("echo \"$*\" >> '%s'", log)), stub)
+  Sys.chmod(stub, "0755")
+  generateIndexes(container = "c", remote = "r", allFiles = fakeFiles(),
+                  rclonePath = stub, quiet = TRUE)
+  calls <- grep("^copyto", readLines(log), value = TRUE)
+  expect_length(calls, 4)
+  expect_true(all(grepl("--s3-acl public-read", calls, fixed = TRUE)))
+})

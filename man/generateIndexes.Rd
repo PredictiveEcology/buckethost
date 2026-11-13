@@ -64,7 +64,7 @@ Invisibly, a named character vector of the generated HTML pages
 \description{
 Lists every object in the bucket, then writes one \code{index.html} per
 "directory" level (including the root) and uploads them back to the bucket
-with \code{rclone}. The result is a static, dependency-free website: open
+with \code{rclone}, readable by anyone (\verb{--s3-acl public-read}). The result is a static, dependency-free website: open
 \verb{<base_url>/index.html} in any browser to navigate the tree, sort columns,
 and click through to files. Each page also carries a configurable
 disclaimer/"hero" block so context follows users wherever they land.
