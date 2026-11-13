@@ -39,7 +39,7 @@ Most functions resolve their connection details from options (or
 ```r
 options(
   buckethost.endpoint  = "https://object-arbutus.alliancecan.ca",
-  buckethost.container = "predictiveecology",
+  buckethost.container = "529feda02d404836b0e91b1d360b4df0:predictiveecology",
   buckethost.remote    = "arbutus"   # the rclone remote name
 )
 ```
@@ -47,10 +47,10 @@ options(
 **Arbutus moved in 2026.** The old endpoint,
 `object-arbutus.cloud.computecanada.ca`, is retired and the package default
 still points at it, so set `buckethost.endpoint` as above. On the new
-endpoint, public URLs include the project id:
-`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`. To read
-anonymously, set `buckethost.container = "<project-id>:predictiveecology"`;
-the rclone-based functions drop the prefix themselves. The `predictiveecology`
+endpoint, public URLs include the project id
+(`https://object-arbutus.alliancecan.ca/<project-id>:<bucket>/<key>`), so the
+container includes it too; the rclone-based functions drop it themselves.
+`buckethost.remote` is whatever you named your rclone remote. The `predictiveecology`
 bucket allows public reads but not public listing, so `bucketLs()` (and with
 it `generateIndexes()` and `makeMirrorManifest()`) lists through your rclone
 remote instead, which needs write access set up.

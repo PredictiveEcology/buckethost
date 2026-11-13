@@ -1,17 +1,32 @@
 # Read one page of a bucket listing. A bucket that refuses anonymous listing
 # makes xml2 fail with only "cannot open the connection"; the HTTP status is in
-# a warning. Turn that case into a classed error so bucketLs() can fall back to
-# rclone, and let every other failure through unchanged.
+# a warning. Turn a 403 into a classed error so bucketLs() can fall back to
+# rclone; report any other HTTP status in the error rather than xml2's bare
+# message.
 readListing <- function(url) {
   warns <- character(0)
   withCallingHandlers(
     tryCatch(xml2::read_xml(url), error = function(e) {
-      if (any(grepl("error: 403", warns, fixed = TRUE))) {
+      status <- regmatches(warns, regexpr("(?<=error: )[0-9]{3}", warns, perl = TRUE))
+      if ("403" %in% status) {
         stop(structure(
           class = c("buckethostListingDenied", "error", "condition"),
           list(message = paste0("Anonymous listing refused (HTTP 403): ", url),
                call = NULL)
         ))
+      }
+      if (length(status)) {
+        stop(
+          sprintf("Could not list the bucket (HTTP %s): %s", status[1], url),
+          if (status[1] == "404") {
+            paste0(
+              "\n  The bucket was not found at this URL. If the store puts a ",
+              "project id in public URLs (as the new Arbutus does), set the ",
+              "container as \"<project-id>:<bucket>\"."
+            )
+          },
+          call. = FALSE
+        )
       }
       stop(e)
     }),

@@ -1,3 +1,11 @@
+# buckethost 0.3.1
+
+* A failed bucket listing now reports the HTTP status instead of only "cannot
+  open the connection", and on a 404 suggests the `"<project-id>:<bucket>"`
+  container form the new Arbutus needs.
+* README and vignettes set `buckethost.container` to the project-id form for the
+  new Arbutus. The bare bucket name they showed in 0.3.0 gave a 404 there.
+
 # buckethost 0.3.0
 
 * `bucketLs()` falls back to listing with `rclone` (your configured remote)

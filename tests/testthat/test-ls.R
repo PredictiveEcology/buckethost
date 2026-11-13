@@ -69,3 +69,13 @@ test_that("bucketRcloneRemote drops a project-id prefix", {
   expect_equal(bucketBaseUrl(endpoint = "https://e", container = "123abc:mybucket"),
                "https://e/123abc:mybucket")
 })
+
+test_that("a listing error names the HTTP status and hints at a project id on 404", {
+  skip_on_cran()
+  skip_if_offline("object-arbutus.alliancecan.ca")
+  expect_error(
+    bucketLs(endpoint = "https://object-arbutus.alliancecan.ca",
+             container = "no-such-bucket-buckethost-test"),
+    "HTTP 404.*<project-id>:<bucket>"
+  )
+})
