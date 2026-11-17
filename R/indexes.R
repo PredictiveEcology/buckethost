@@ -176,6 +176,10 @@ buildIndexPages <- function(allFiles, template, opts) {
 #' @param allFiles Optional pre-fetched object table (as returned by
 #'   [bucketLs()]). Supply it to avoid re-listing the bucket, or to index a
 #'   subset. When `NULL` (default) the bucket is listed for you.
+#' @param exclude Folders to leave out of the catalogue, as paths from the
+#'   bucket root, e.g. `"wbi"`. They get no `index.html` and do not appear in
+#'   their parent's page. Use it for a folder that is served elsewhere or holds
+#'   too many objects to browse. See [bucketLs()]. Default `character(0)`.
 #' @param rclonePath Path to the `rclone` executable. Default `"rclone"`.
 #' @param dryRun If `TRUE`, build the pages but do not upload them; the HTML
 #'   is returned (invisibly) for inspection. Default `FALSE`.
@@ -223,6 +227,7 @@ generateIndexes <- function(container = NULL,
                              ),
                              template = NULL,
                              allFiles = NULL,
+                             exclude = character(0),
                              rclonePath = "rclone",
                              dryRun = FALSE,
                              quiet = FALSE) {
@@ -235,8 +240,10 @@ generateIndexes <- function(container = NULL,
 
   if (is.null(allFiles)) {
     allFiles <- bucketLs(container = container, endpoint = endpoint,
-                         remote = remote, rclonePath = rclonePath)
+                         remote = remote, rclonePath = rclonePath,
+                         exclude = exclude)
   }
+  allFiles <- dropExcluded(allFiles, exclude)
   if (!quiet) message(sprintf("Indexing %d objects...", nrow(allFiles)))
 
   opts <- list(

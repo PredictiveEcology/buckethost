@@ -143,3 +143,34 @@ test_that("index pages are uploaded public-read", {
   expect_length(calls, 4)
   expect_true(all(grepl("--s3-acl public-read", calls, fixed = TRUE)))
 })
+
+test_that("excluded folders get no pages and are not linked from the root", {
+  files <- data.frame(
+    key = c("SCANFI_v2/1985/a.tif", "wbi/x/1.png", "wbi/x/2.png", "wbix/b.tif"),
+    size = 1, modified = "2026-01-01", stringsAsFactors = FALSE
+  )
+  pages <- generateIndexes(allFiles = files, exclude = "wbi", dryRun = TRUE,
+                           quiet = TRUE, container = "c", endpoint = "https://e")
+  expect_setequal(names(pages), c("", "SCANFI_v2", "SCANFI_v2/1985", "wbix"))
+  root <- pages[[which(names(pages) == "")]]
+  expect_false(grepl("'wbi/index.html'", root, fixed = TRUE))
+  expect_true(grepl("'wbix/index.html'", root, fixed = TRUE))
+})
+
+test_that("bucketLs asks rclone to skip excluded folders", {
+  skip_on_os("windows")
+  log <- tempfile()
+  stub <- tempfile(fileext = ".sh")
+  writeLines(c("#!/bin/sh", sprintf("echo \"$*\" >> '%s'", log),
+               "printf 'wbi/1.png\\t1\\t2026-01-01 00:00:00\\n'",
+               "printf 'a/b.tif\\t1\\t2026-01-01 00:00:00\\n'"), stub)
+  Sys.chmod(stub, "0755")
+  df <- buckethost:::rcloneListKeys("r:c", rclonePath = stub, exclude = c("wbi", "/x/y/"))
+  expect_match(readLines(log), "--exclude /wbi/\\*\\* --exclude /x/y/\\*\\*")
+  # The stub ignores the filters; dropExcluded() in bucketLs() is the backstop.
+  expect_equal(buckethost:::dropExcluded(df, "wbi")$key, "a/b.tif")
+  # No exclusions: no filter flags at all.
+  unlink(log)
+  buckethost:::rcloneListKeys("r:c", rclonePath = stub)
+  expect_false(grepl("--exclude", readLines(log), fixed = TRUE))
+})

@@ -10,7 +10,8 @@ bucketLs(
   endpoint = NULL,
   includeIndexes = FALSE,
   remote = NULL,
-  rclonePath = "rclone"
+  rclonePath = "rclone",
+  exclude = character(0)
 )
 }
 \arguments{
@@ -34,11 +35,16 @@ built-in default.}
 
 \item{rclonePath}{Path to the \code{rclone} executable, used only when anonymous
 listing is refused. Default \code{"rclone"}.}
+
+\item{exclude}{Folders to leave out, as paths from the bucket root, e.g.
+\code{"wbi"} or \code{"SCANFI_v2/1985"}. Their objects are dropped from the result.
+When listing with rclone they are not listed at all, which saves time on
+a folder with millions of objects. Default \code{character(0)} (none).}
 }
 \value{
 A \code{data.frame} with columns \code{key}, \code{size} (bytes), and \code{modified}
-(a time string: ISO-8601 from the public listing, \code{"YYYY-MM-DD HH:MM:SS"}
-from rclone), sorted by key.
+(the upload time: ISO-8601 from the public listing,
+\code{"YYYY-MM-DD HH:MM:SS"} from rclone), sorted by key.
 }
 \description{
 Reads the bucket's public S3 listing API and returns one row per object.

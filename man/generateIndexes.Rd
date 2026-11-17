@@ -13,6 +13,7 @@ generateIndexes(
   hostNote = getOption("buckethost.hostNote", "Hosted on an S3-compatible object store."),
   template = NULL,
   allFiles = NULL,
+  exclude = character(0),
   rclonePath = "rclone",
   dryRun = FALSE,
   quiet = FALSE
@@ -49,6 +50,11 @@ with the package (see \code{system.file("templates", "index.html", package = "bu
 \item{allFiles}{Optional pre-fetched object table (as returned by
 \code{\link[=bucketLs]{bucketLs()}}). Supply it to avoid re-listing the bucket, or to index a
 subset. When \code{NULL} (default) the bucket is listed for you.}
+
+\item{exclude}{Folders to leave out of the catalogue, as paths from the
+bucket root, e.g. \code{"wbi"}. They get no \code{index.html} and do not appear in
+their parent's page. Use it for a folder that is served elsewhere or holds
+too many objects to browse. See \code{\link[=bucketLs]{bucketLs()}}. Default \code{character(0)}.}
 
 \item{rclonePath}{Path to the \code{rclone} executable. Default \code{"rclone"}.}
 

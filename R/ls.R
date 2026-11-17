@@ -40,13 +40,23 @@ readListing <- function(url) {
 # List keys under `prefix` with `rclone lsf`, using credentials from the rclone
 # remote. rclone lists by directory, so list the directory part of the prefix
 # and keep keys that start with the full prefix (S3 prefix semantics).
-# `modified` is rclone's modification time (the source file's time when it was
-# uploaded with rclone), formatted "YYYY-MM-DD HH:MM:SS".
-rcloneListKeys <- function(rcloneRemote, prefix = "", rclonePath = "rclone") {
+# `modified` is the time the object was uploaded, as in the public listing,
+# formatted "YYYY-MM-DD HH:MM:SS". `--use-server-modtime` gives that time from
+# the listing itself; without it rclone makes one extra request per object to
+# read the source file's time (135 s for 1,119 objects on Arbutus, 1 s with).
+rcloneListKeys <- function(rcloneRemote, prefix = "", rclonePath = "rclone",
+                           exclude = character(0)) {
   dir <- sub("[^/]*$", "", prefix)
+  # Skip excluded folders inside rclone, so their objects are never listed.
+  # Filter paths are relative to the listed directory.
+  pre <- excludePrefixes(exclude)
+  pre <- pre[startsWith(pre, dir)]
+  filters <- if (length(pre)) {
+    as.vector(rbind("--exclude", paste0("/", substring(pre, nchar(dir) + 1L), "**")))
+  }
   out <- rclone(
-    c("lsf", "-R", "--files-only", "--format", "pst", "--separator", "\t",
-      paste0(rcloneRemote, "/", dir)),
+    c("lsf", "-R", "--files-only", "--use-server-modtime", "--format", "pst", "--separator", "\t",
+      filters, paste0(rcloneRemote, "/", dir)),
     path = rclonePath, error = FALSE
   )
   status <- attr(out, "status")
@@ -136,10 +146,14 @@ fetchAllKeys <- function(base_url, prefix = "") {
 #'   are dropped from the result so you see only data objects.
 #' @param rclonePath Path to the `rclone` executable, used only when anonymous
 #'   listing is refused. Default `"rclone"`.
+#' @param exclude Folders to leave out, as paths from the bucket root, e.g.
+#'   `"wbi"` or `"SCANFI_v2/1985"`. Their objects are dropped from the result.
+#'   When listing with rclone they are not listed at all, which saves time on
+#'   a folder with millions of objects. Default `character(0)` (none).
 #'
 #' @return A `data.frame` with columns `key`, `size` (bytes), and `modified`
-#'   (a time string: ISO-8601 from the public listing, `"YYYY-MM-DD HH:MM:SS"`
-#'   from rclone), sorted by key.
+#'   (the upload time: ISO-8601 from the public listing,
+#'   `"YYYY-MM-DD HH:MM:SS"` from rclone), sorted by key.
 #' @seealso [bucketUrl()], [generateIndexes()]
 #' @export
 #' @examples
@@ -153,7 +167,8 @@ bucketLs <- function(prefix = "",
                       endpoint = NULL,
                       includeIndexes = FALSE,
                       remote = NULL,
-                      rclonePath = "rclone") {
+                      rclonePath = "rclone",
+                      exclude = character(0)) {
   base_url <- bucketBaseUrl(container, endpoint)
   df <- tryCatch(
     fetchAllKeys(base_url, prefix = prefix),
@@ -161,13 +176,29 @@ bucketLs <- function(prefix = "",
       rcloneRemote <- bucketRcloneRemote(container, remote)
       message("Anonymous listing refused; listing with rclone remote '",
               rcloneRemote, "'.")
-      rcloneListKeys(rcloneRemote, prefix = prefix, rclonePath = rclonePath)
+      rcloneListKeys(rcloneRemote, prefix = prefix, rclonePath = rclonePath,
+                     exclude = exclude)
     }
   )
+  df <- dropExcluded(df, exclude)
   if (!includeIndexes && nrow(df) > 0) {
     df <- df[!grepl("(^|/)index\\.html$", df$key), , drop = FALSE]
   }
   df <- df[order(df$key), , drop = FALSE]
   rownames(df) <- NULL
   df
+}
+
+# "wbi", "/wbi/" -> "wbi/": the key prefix of each excluded folder.
+excludePrefixes <- function(exclude) {
+  if (length(exclude) == 0L) return(character(0))
+  paste0(gsub("^/+|/+$", "", exclude), "/")
+}
+
+# Drop rows whose key is inside an excluded folder.
+dropExcluded <- function(df, exclude) {
+  pre <- excludePrefixes(exclude)
+  if (length(pre) == 0L || nrow(df) == 0L) return(df)
+  inside <- Reduce(`|`, lapply(pre, function(p) startsWith(df$key, p)))
+  df[!inside, , drop = FALSE]
 }
