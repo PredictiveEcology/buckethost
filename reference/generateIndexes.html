@@ -44,7 +44,7 @@ disclaimer/&quot;hero&quot; block so context follows users wherever they land.">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Generate a browsable HTML catalogue for a bucket</h1>
-      <small class="dont-index">Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/v0.3.2/R/indexes.R" class="external-link"><code>R/indexes.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/main/R/indexes.R" class="external-link"><code>R/indexes.R</code></a></small>
       <div class="d-none name"><code>generateIndexes.Rd</code></div>
     </div>
 
@@ -68,6 +68,7 @@ disclaimer/"hero" block so context follows users wherever they land.</p>
 <span>  hostNote <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"buckethost.hostNote"</span>, <span class="st">"Hosted on an S3-compatible object store."</span><span class="op">)</span>,</span>
 <span>  template <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  allFiles <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  exclude <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
 <span>  rclonePath <span class="op">=</span> <span class="st">"rclone"</span>,</span>
 <span>  dryRun <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -123,6 +124,13 @@ with the package (see <code>system.file("templates", "index.html", package = "bu
 <dd><p>Optional pre-fetched object table (as returned by
 <code><a href="bucketLs.html">bucketLs()</a></code>). Supply it to avoid re-listing the bucket, or to index a
 subset. When <code>NULL</code> (default) the bucket is listed for you.</p></dd>
+
+
+<dt id="arg-exclude">exclude<a class="anchor" aria-label="anchor" href="#arg-exclude"></a></dt>
+<dd><p>Folders to leave out of the catalogue, as paths from the
+bucket root, e.g. <code>"wbi"</code>. They get no <code>index.html</code> and do not appear in
+their parent's page. Use it for a folder that is served elsewhere or holds
+too many objects to browse. See <code><a href="bucketLs.html">bucketLs()</a></code>. Default <code>character(0)</code>.</p></dd>
 
 
 <dt id="arg-rclonepath">rclonePath<a class="anchor" aria-label="anchor" href="#arg-rclonepath"></a></dt>

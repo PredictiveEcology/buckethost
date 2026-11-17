@@ -15,7 +15,8 @@ bucketLs(
   endpoint = NULL,
   includeIndexes = FALSE,
   remote = NULL,
-  rclonePath = "rclone"
+  rclonePath = "rclone",
+  exclude = character(0)
 )
 ```
 
@@ -54,10 +55,17 @@ bucketLs(
   Path to the `rclone` executable, used only when anonymous listing is
   refused. Default `"rclone"`.
 
+- exclude:
+
+  Folders to leave out, as paths from the bucket root, e.g. `"wbi"` or
+  `"SCANFI_v2/1985"`. Their objects are dropped from the result. When
+  listing with rclone they are not listed at all, which saves time on a
+  folder with millions of objects. Default `character(0)` (none).
+
 ## Value
 
-A `data.frame` with columns `key`, `size` (bytes), and `modified` (a
-time string: ISO-8601 from the public listing, `"YYYY-MM-DD HH:MM:SS"`
+A `data.frame` with columns `key`, `size` (bytes), and `modified` (the
+upload time: ISO-8601 from the public listing, `"YYYY-MM-DD HH:MM:SS"`
 from rclone), sorted by key.
 
 ## See also

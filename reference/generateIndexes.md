@@ -21,6 +21,7 @@ generateIndexes(
   hostNote = getOption("buckethost.hostNote", "Hosted on an S3-compatible object store."),
   template = NULL,
   allFiles = NULL,
+  exclude = character(0),
   rclonePath = "rclone",
   dryRun = FALSE,
   quiet = FALSE
@@ -77,6 +78,15 @@ generateIndexes(
   [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)).
   Supply it to avoid re-listing the bucket, or to index a subset. When
   `NULL` (default) the bucket is listed for you.
+
+- exclude:
+
+  Folders to leave out of the catalogue, as paths from the bucket root,
+  e.g. `"wbi"`. They get no `index.html` and do not appear in their
+  parent's page. Use it for a folder that is served elsewhere or holds
+  too many objects to browse. See
+  [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md).
+  Default `character(0)`.
 
 - rclonePath:
 

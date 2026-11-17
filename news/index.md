@@ -1,5 +1,18 @@
 # Changelog
 
+## buckethost (development version)
+
+- [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)
+  and
+  [`bucketLs()`](https://predictiveecology.github.io/buckethost/reference/bucketLs.md)
+  gain `exclude`, to leave folders out, e.g. `exclude = "wbi"` for a
+  folder of millions of map tiles that is served by its own site. rclone
+  does not list an excluded folder at all.
+- Listing with rclone is much faster: it takes each object’s upload time
+  from the listing instead of asking for it object by object (1 s
+  instead of 135 s for 1,119 objects). `modified` is now the upload
+  time, as in the public listing.
+
 ## buckethost 0.3.2
 
 - [`generateIndexes()`](https://predictiveecology.github.io/buckethost/reference/generateIndexes.md)

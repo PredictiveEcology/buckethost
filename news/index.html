@@ -34,9 +34,15 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/v0.3.2/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/PredictiveEcology/buckethost/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="buckethost-development-version">buckethost (development version)<a class="anchor" aria-label="anchor" href="#buckethost-development-version"></a></h2>
+<ul><li>
+<code><a href="../reference/generateIndexes.html">generateIndexes()</a></code> and <code><a href="../reference/bucketLs.html">bucketLs()</a></code> gain <code>exclude</code>, to leave folders out, e.g. <code>exclude = "wbi"</code> for a folder of millions of map tiles that is served by its own site. rclone does not list an excluded folder at all.</li>
+<li>Listing with rclone is much faster: it takes each object’s upload time from the listing instead of asking for it object by object (1 s instead of 135 s for 1,119 objects). <code>modified</code> is now the upload time, as in the public listing.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="buckethost-032">buckethost 0.3.2<a class="anchor" aria-label="anchor" href="#buckethost-032"></a></h2>
 <ul><li>
